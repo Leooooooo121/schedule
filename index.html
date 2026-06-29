@@ -150,7 +150,7 @@ header p { margin-top: .35rem; opacity: .85; font-size: .9rem; }
 }
 .item-info { flex: 1; min-width: 0; }
 .item-dest { font-weight: 700; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.item-dates { font-size: .8rem; color: var(--muted); margin-top: .15rem; }
+.item-dates { font-size: .8rem; color: var(--muted); margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .item-actions { display: flex; gap: .4rem; flex-shrink: 0; }
 .btn-item {
   padding: .4rem .75rem; border-radius: 7px; border: none;
@@ -303,13 +303,60 @@ textarea { resize: vertical; min-height: 72px; }
   font-size: .78rem; font-weight: 700; margin-bottom: 1rem;
 }
 
+/* Reset button variant */
+.btn-reset {
+  flex: 0.6;
+  background: #fef2f2; color: var(--danger);
+  border: 1.5px solid #fca5a5; border-radius: 10px;
+  padding: .8rem 1rem; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: background .2s;
+}
+.btn-reset:hover { background: #fee2e2; }
+
 @media (max-width: 540px) {
+  /* Header: prevent h1 text from overlapping absolute settings button */
+  header { padding: 1.25rem 5rem 1.75rem 1.25rem; text-align: left; }
+  header p { font-size: .82rem; }
+
+  /* Settings: stack vertically */
+  .settings-inner { grid-template-columns: 1fr; }
+  .btn-save-cfg { width: 100%; }
+
+  /* Tabs */
+  .tab { font-size: .82rem; padding: .6rem .5rem; }
+
+  /* Panel card */
+  .panel-card { padding: 1.1rem; border-radius: 0 0 var(--radius) var(--radius); }
+
+  /* Form grid: single column */
   .form-grid { grid-template-columns: 1fr; }
   .full { grid-column: 1; }
-  .stop-item { grid-template-columns: 80px 1fr 36px; }
-  .stop-item > div:nth-child(3), .stop-item > div:nth-child(4) { grid-column: 1 / -1; }
-  .panel-card { padding: 1.25rem; }
-  .settings-inner { grid-template-columns: 1fr; }
+
+  /* Stop items: 3-column layout with explicit button position */
+  .stop-item {
+    grid-template-columns: 84px 1fr 34px;
+    gap: .4rem;
+    padding: .6rem;
+  }
+  /* time → col 1, name → col 2 (auto-placed, correct) */
+  /* button forced to row 1, col 3 so it aligns with time+name */
+  .stop-item .btn-rm { grid-row: 1; grid-column: 3; align-self: end; width: 30px; height: 30px; }
+  /* note and map: full-width rows below */
+  .stop-item > div:nth-child(3) { grid-column: 1 / -1; }
+  .stop-item > div:nth-child(4) { grid-column: 1 / -1; }
+
+  /* Form actions: save button full-width on top, then reset+preview below */
+  .form-actions { flex-wrap: wrap; gap: .5rem; }
+  .btn-save-gh  { flex: 1 1 100%; order: -1; }
+  .btn-preview  { flex: 1 1 calc(50% - .25rem); font-size: .9rem; padding: .75rem .5rem; }
+  .btn-reset    { flex: 1 1 calc(50% - .25rem); font-size: .9rem; padding: .75rem .5rem; }
+
+  /* List toolbar */
+  .list-toolbar h3 { font-size: .9rem; }
+
+  /* Itinerary card */
+  .day-section { padding: 1.1rem; }
+  .itinerary-header { padding: 1.1rem; }
 }
 @media print {
   header, .tabs, .panel-wrap > :not(.preview-wrap) { display: none !important; }
@@ -342,7 +389,10 @@ textarea { resize: vertical; min-height: 72px; }
       <label>Repository</label>
       <input id="cfgRepo" type="text" placeholder="schedule">
     </div>
-    <button class="btn-save-cfg" onclick="saveSettings()">儲存</button>
+    <div>
+      <label style="visibility:hidden;display:block">.</label>
+      <button class="btn-save-cfg" onclick="saveSettings()">儲存</button>
+    </div>
   </div>
 </div>
 
@@ -406,7 +456,7 @@ textarea { resize: vertical; min-height: 72px; }
         </div>
       </div>
       <div class="form-actions">
-        <button class="btn-preview" onclick="resetForm()" style="flex:0.6;background:#fef2f2;color:#dc2626;border-color:#fca5a5">🗑 重設</button>
+        <button class="btn-reset" onclick="resetForm()">🗑 重設</button>
         <button class="btn-preview" onclick="buildPreview()">👁️ 預覽</button>
         <button class="btn-save-gh" id="saveBtn" onclick="saveToGitHub()">☁️ 儲存到 GitHub</button>
       </div>
