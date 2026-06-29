@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅遊行程自動產生器</title>
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --accent: #f59e0b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    color: #fff;
+    padding: 2rem 1.5rem 3rem;
+    text-align: center;
+  }
+  header h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 700; letter-spacing: -0.5px; }
+  header p { margin-top: .5rem; opacity: .85; font-size: .95rem; }
+
+  /* ── Form card ── */
+  .form-wrap {
+    max-width: 680px;
+    margin: -1.5rem auto 2rem;
+    padding: 0 1rem;
+  }
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    padding: 2rem 1.75rem;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  .full { grid-column: 1 / -1; }
+  label { display: block; font-size: .85rem; font-weight: 600; color: var(--muted); margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .04em; }
+  input, textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: .65rem .9rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    transition: border-color .2s;
+    outline: none;
+  }
+  input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .stop-list { display: flex; flex-direction: column; gap: .65rem; }
+  .stop-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: .5rem;
+    align-items: end;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: .75rem;
+  }
+  .stop-item input { background: #fff; font-size: .9rem; }
+  .btn-rm {
+    background: #fee2e2; border: none; border-radius: 6px;
+    width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem;
+    color: #dc2626; display: flex; align-items: center; justify-content: center;
+  }
+  .btn-add {
+    display: flex; align-items: center; gap: .4rem;
+    background: none; border: 1.5px dashed var(--border);
+    border-radius: 8px; padding: .6rem 1rem;
+    cursor: pointer; color: var(--muted); font-size: .9rem; font-weight: 600;
+    width: 100%; justify-content: center; margin-top: .5rem;
+    transition: background .2s, color .2s;
+  }
+  .btn-add:hover { background: var(--bg); color: var(--primary); border-color: var(--primary); }
+
+  .btn-generate {
+    display: block; width: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff; border: none; border-radius: 10px;
+    padding: .9rem 1.5rem; font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; margin-top: 1.75rem;
+    box-shadow: 0 4px 14px rgba(59,130,246,.35);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-generate:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,.45); }
+  .btn-generate:active { transform: translateY(0); }
+
+  /* ── Output ── */
+  #output { max-width: 680px; margin: 0 auto 3rem; padding: 0 1rem; }
+  .action-bar {
+    display: flex; gap: .75rem; margin-bottom: 1.25rem; flex-wrap: wrap;
+  }
+  .btn-action {
+    flex: 1; min-width: 140px;
+    display: flex; align-items: center; justify-content: center; gap: .4rem;
+    padding: .7rem 1rem; border-radius: 8px; border: none;
+    font-size: .9rem; font-weight: 600; cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-copy { background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; }
+  .btn-copy:hover { background: #d1fae5; }
+  .btn-print { background: #eff6ff; color: var(--primary-dark); border: 1.5px solid #bfdbfe; }
+  .btn-print:hover { background: #dbeafe; }
+  .btn-deploy { background: #fef3c7; color: #b45309; border: 1.5px solid #fcd34d; }
+  .btn-deploy:hover { background: #fde68a; }
+
+  /* ── Itinerary card ── */
+  .itinerary-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .itinerary-header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    color: #fff; padding: 1.75rem 1.75rem 1.25rem;
+  }
+  .itinerary-header h2 { font-size: 1.5rem; font-weight: 700; }
+  .itinerary-header .meta { margin-top: .5rem; opacity: .85; font-size: .9rem; display: flex; flex-wrap: wrap; gap: .75rem; }
+  .meta-item { display: flex; align-items: center; gap: .3rem; }
+  .desc-box { background: rgba(255,255,255,.15); border-radius: 8px; padding: .75rem 1rem; margin-top: 1rem; font-size: .9rem; line-height: 1.6; }
+
+  .day-section { padding: 1.5rem 1.75rem; border-bottom: 1px solid var(--border); }
+  .day-section:last-child { border-bottom: none; }
+  .day-label {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: var(--primary); color: #fff;
+    border-radius: 20px; padding: .3rem .9rem;
+    font-size: .8rem; font-weight: 700; margin-bottom: 1rem;
+    letter-spacing: .04em;
+  }
+  .timeline { position: relative; padding-left: 1.75rem; }
+  .timeline::before {
+    content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--border);
+  }
+  .tl-item { position: relative; margin-bottom: 1.1rem; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot {
+    position: absolute; left: -1.75rem; top: 4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--primary); border: 2.5px solid #fff;
+    box-shadow: 0 0 0 2px var(--primary);
+  }
+  .tl-dot.accent { background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .tl-time { font-size: .8rem; font-weight: 700; color: var(--muted); letter-spacing: .05em; }
+  .tl-name { font-size: 1rem; font-weight: 600; margin: .15rem 0; }
+  .tl-note { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+  .map-link {
+    display: inline-flex; align-items: center; gap: .3rem;
+    margin-top: .3rem; font-size: .82rem; color: var(--primary);
+    text-decoration: none; font-weight: 600;
+  }
+  .map-link:hover { text-decoration: underline; }
+
+  /* deploy modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 100;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: var(--radius); padding: 2rem;
+    max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
+  .modal p { font-size: .9rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.6; }
+  .modal input { margin-bottom: .75rem; }
+  .modal-btns { display: flex; gap: .75rem; margin-top: 1rem; }
+  .modal-btns button { flex: 1; padding: .7rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: .95rem; }
+  .btn-ok { background: var(--primary); color: #fff; }
+  .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
+  .status-msg { font-size: .85rem; margin-top: .75rem; padding: .5rem .75rem; border-radius: 6px; display: none; }
+  .status-msg.ok { background: #ecfdf5; color: #059669; display: block; }
+  .status-msg.err { background: #fef2f2; color: #dc2626; display: block; }
+
+  @media (max-width: 520px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .full { grid-column: 1; }
+    .stop-item { grid-template-columns: 1fr 1fr; }
+    .stop-item input:nth-child(3) { grid-column: 1 / -1; }
+    .card { padding: 1.5rem 1.25rem; }
+    .day-section { padding: 1.25rem; }
+    .itinerary-header { padding: 1.25rem; }
+  }
+  @media print {
+    header, .form-wrap, .action-bar { display: none !important; }
+    #output { margin: 0; padding: 0; max-width: 100%; }
+    .itinerary-card { box-shadow: none; }
+    .day-section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✈️ 旅遊行程自動產生器</h1>
+  <p>填寫資訊，一鍵產生精美行程表，部署至手機可直接瀏覽</p>
+</header>
+
+<div class="form-wrap">
+  <div class="card">
+    <div class="form-grid">
+      <div class="full">
+        <label>🗺️ 旅遊目的地</label>
+        <input id="destInput" type="text" placeholder="Ex:東京">
+      </div>
+      <div>
+        <label>📅 旅遊起始日期</label>
+        <input id="startInput" type="date">
+      </div>
+      <div>
+        <label>🏁 旅遊結束日期</label>
+        <input id="endInput" type="date">
+      </div>
+      <div class="full">
+        <label>📝 旅遊說明</label>
+        <textarea id="descInput" placeholder="簡單描述這次旅遊的主題或目的…"></textarea>
+      </div>
+      <div class="full">
+        <label>📍 景點行程安排</label>
+        <div class="stop-list" id="stopList"></div>
+        <button class="btn-add" onclick="addStop()">＋ 新增景點 / 行程</button>
+      </div>
+    </div>
+    <button class="btn-generate" onclick="generate()">🚀 產生行程表</button>
+  </div>
+</div>
+
+<div id="output" style="display:none">
+  <div class="action-bar">
+    <button class="btn-action btn-copy" onclick="copyText()">📋 複製行程文字</button>
+    <button class="btn-action btn-print" onclick="window.print()">🖨️ 列印 / 儲存 PDF</button>
+    <button class="btn-action btn-deploy" onclick="openDeploy()">🚀 部署到 GitHub Pages</button>
+  </div>
+  <div class="itinerary-card" id="itineraryCard"></div>
+</div>
+
+<!-- Deploy Modal -->
+<div class="modal-overlay" id="deployModal">
+  <div class="modal">
+    <h3>🚀 部署行程表到 GitHub Pages</h3>
+    <p>行程表會以獨立 HTML 檔案儲存到你的 GitHub repo，並自動部署到 GitHub Pages，手機可直接瀏覽。</p>
+    <label>GitHub Token（需 repo 權限）</label>
+    <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <label>GitHub 使用者名稱</label>
+    <input id="ghUser" type="text" placeholder="Leooooooo121">
+    <label>Repository 名稱</label>
+    <input id="ghRepo" type="text" placeholder="schedule">
+    <label>行程檔名（不含 .html）</label>
+    <input id="ghFilename" type="text" placeholder="tokyo-2026">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeDeploy()">取消</button>
+      <button class="btn-ok" onclick="deployToGitHub()">部署</button>
+    </div>
+    <div class="status-msg" id="deployStatus"></div>
+  </div>
+</div>
+
+<script>
+// ─── Default stop template ───────────────────────────────────────────────────
+const defaultStops = [
+  { time: '09:00', name: '早餐 / 集合出發', note: '在飯店或附近餐廳用餐', map: '' },
+  { time: '10:30', name: '第一景點參觀', note: '自由探索', map: '' },
+  { time: '12:30', name: '午餐', note: '附近特色餐廳', map: '' },
+  { time: '14:00', name: '下午景點 / 購物', note: '自由活動', map: '' },
+  { time: '17:30', name: '晚餐', note: '推薦當地料理', map: '' },
+  { time: '19:30', name: '夜間活動 / 返回', note: '散步或返回住宿', map: '' },
+];
+
+// ─── Stop UI ─────────────────────────────────────────────────────────────────
+function addStop(s = {}) {
+  const list = document.getElementById('stopList');
+  const idx = list.children.length;
+  const div = document.createElement('div');
+  div.className = 'stop-item';
+  div.innerHTML = `
+    <div><label style="font-size:.75rem">時間 HH:mm</label>
+      <input type="time" value="${s.time||'09:00'}"></div>
+    <div><label style="font-size:.75rem">景點 / 活動名稱</label>
+      <input type="text" placeholder="名稱" value="${s.name||''}"></div>
+    <div><label style="font-size:.75rem">備註說明</label>
+      <input type="text" placeholder="備註（選填）" value="${s.note||''}"></div>
+    <div><label style="font-size:.75rem">Google Maps</label>
+      <input type="url" placeholder="https://maps.app.goo.gl/..." value="${s.map||''}"></div>
+    <button class="btn-rm" onclick="this.parentElement.remove()" title="刪除">✕</button>`;
+  // fix grid for remove btn
+  div.style.gridTemplateColumns = '90px 1fr 1fr 1fr 36px';
+  list.appendChild(div);
+}
+
+function getStops() {
+  return Array.from(document.getElementById('stopList').children).map(el => {
+    const inputs = el.querySelectorAll('input');
+    return { time: inputs[0].value, name: inputs[1].value, note: inputs[2].value, map: inputs[3].value };
+  }).filter(s => s.name.trim());
+}
+
+// Init with defaults
+defaultStops.forEach(addStop);
+
+// ─── Date helpers ─────────────────────────────────────────────────────────────
+function parseDT(val) {
+  if (!val) return null;
+  const [y, m, d] = val.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit', weekday:'short' });
+}
+function daysBetween(a, b) {
+  const diff = new Date(b.getFullYear(), b.getMonth(), b.getDate()) -
+               new Date(a.getFullYear(), a.getMonth(), a.getDate());
+  return Math.max(1, Math.round(diff / 86400000) + 1);
+}
+
+// ─── Generate ────────────────────────────────────────────────────────────────
+function generate() {
+  const dest  = document.getElementById('destInput').value.trim() || '旅遊目的地';
+  const start = parseDT(document.getElementById('startInput').value);
+  const end   = parseDT(document.getElementById('endInput').value);
+  const desc  = document.getElementById('descInput').value.trim();
+  const stops = getStops();
+
+  if (!start) { alert('請選擇開始日期時間'); return; }
+
+  const days   = end ? daysBetween(start, end) : 1;
+  const card   = document.getElementById('itineraryCard');
+  const output = document.getElementById('output');
+
+  // Build header
+  let html = `
+  <div class="itinerary-header">
+    <h2>📍 ${dest}</h2>
+    <div class="meta">
+      <span class="meta-item">📅 ${fmtDate(start)}${end && end>start ? ' → ' + fmtDate(end) : ''}</span>
+      <span class="meta-item">🗓 共 ${days} 天</span>
+    </div>
+    ${desc ? `<div class="desc-box">💬 ${desc}</div>` : ''}
+  </div>`;
+
+  // Distribute stops across days
+  const perDay = Math.ceil(stops.length / days) || 1;
+  for (let d = 0; d < days; d++) {
+    const dayDate = new Date(start);
+    dayDate.setDate(start.getDate() + d);
+    const dayStops = stops.slice(d * perDay, (d + 1) * perDay);
+
+    html += `<div class="day-section">
+      <div class="day-label">第 ${d+1} 天 &nbsp;${fmtDate(dayDate)}</div>
+      <div class="timeline">`;
+
+    if (dayStops.length === 0) {
+      html += `<div class="tl-item"><div class="tl-dot"></div>
+        <div class="tl-note">自由活動日</div></div>`;
+    } else {
+      dayStops.forEach((s, i) => {
+        const isAccent = i === 0 || i === dayStops.length - 1;
+        html += `<div class="tl-item">
+          <div class="tl-dot${isAccent ? ' accent' : ''}"></div>
+          <div class="tl-time">${s.time}</div>
+          <div class="tl-name">${escHtml(s.name)}</div>
+          ${s.note ? `<div class="tl-note">${escHtml(s.note)}</div>` : ''}
+          ${s.map ? `<a class="map-link" href="${escHtml(s.map)}" target="_blank">📍 查看地圖</a>` : ''}
+        </div>`;
+      });
+    }
+    html += `</div></div>`;
+  }
+
+  card.innerHTML = html;
+  output.style.display = 'block';
+  output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // cache for deploy
+  window._itineraryData = { dest, start, end, desc, stops, days, html: buildStandaloneHTML(dest, start, end, desc, stops, days, card.innerHTML) };
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Copy text ───────────────────────────────────────────────────────────────
+function copyText() {
+  const d = window._itineraryData;
+  if (!d) return;
+  let txt = `📍 ${d.dest} 旅遊行程\n`;
+  txt += `📅 ${fmtDate(d.start)}${d.end ? ' → ' + fmtDate(d.end) : ''}\n`;
+  if (d.desc) txt += `💬 ${d.desc}\n`;
+  txt += '\n';
+  const perDay = Math.ceil(d.stops.length / d.days) || 1;
+  for (let i = 0; i < d.days; i++) {
+    const dd = new Date(d.start); dd.setDate(d.start.getDate() + i);
+    txt += `【第${i+1}天】${fmtDate(dd)}\n`;
+    const sl = d.stops.slice(i*perDay, (i+1)*perDay);
+    sl.forEach(s => {
+      txt += `  ${s.time} ${s.name}`;
+      if (s.note) txt += `（${s.note}）`;
+      if (s.map) txt += `\n        📍 ${s.map}`;
+      txt += '\n';
+    });
+    txt += '\n';
+  }
+  navigator.clipboard.writeText(txt).then(() => alert('✅ 行程已複製到剪貼簿！'));
+}
+
+// ─── Standalone HTML for deploy ──────────────────────────────────────────────
+function buildStandaloneHTML(dest, start, end, desc, stops, days, bodyInner) {
+  return `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${escHtml(dest)} 行程表</title>
+<style>
+:root{--primary:#3b82f6;--accent:#f59e0b;--bg:#f8fafc;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1rem}
+.itinerary-card{max-width:680px;margin:0 auto;background:var(--card);border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden}
+.itinerary-header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:1.75rem 1.75rem 1.25rem}
+.itinerary-header h2{font-size:1.5rem;font-weight:700}
+.meta{margin-top:.5rem;opacity:.85;font-size:.9rem;display:flex;flex-wrap:wrap;gap:.75rem}
+.desc-box{background:rgba(255,255,255,.15);border-radius:8px;padding:.75rem 1rem;margin-top:1rem;font-size:.9rem;line-height:1.6}
+.day-section{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border)}
+.day-section:last-child{border-bottom:none}
+.day-label{display:inline-flex;align-items:center;background:var(--primary);color:#fff;border-radius:20px;padding:.3rem .9rem;font-size:.8rem;font-weight:700;margin-bottom:1rem}
+.timeline{position:relative;padding-left:1.75rem}
+.timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:1.1rem}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-1.75rem;top:4px;width:16px;height:16px;border-radius:50%;background:var(--primary);border:2.5px solid #fff;box-shadow:0 0 0 2px var(--primary)}
+.tl-dot.accent{background:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.tl-time{font-size:.8rem;font-weight:700;color:var(--muted)}
+.tl-name{font-size:1rem;font-weight:600;margin:.15rem 0}
+.tl-note{font-size:.85rem;color:var(--muted);line-height:1.5}
+.map-link{display:inline-flex;align-items:center;gap:.3rem;margin-top:.3rem;font-size:.82rem;color:var(--primary);text-decoration:none;font-weight:600}
+@media(max-width:520px){.day-section{padding:1.25rem}.itinerary-header{padding:1.25rem}}
+</style>
+</head>
+<body>
+<div class="itinerary-card">${bodyInner}</div>
+</body>
+</html>`;
+}
+
+// ─── Deploy modal ─────────────────────────────────────────────────────────────
+function openDeploy() {
+  if (!window._itineraryData) { alert('請先產生行程表'); return; }
+  // auto-fill defaults
+  document.getElementById('ghUser').value = document.getElementById('ghUser').value || 'Leooooooo121';
+  document.getElementById('ghRepo').value = document.getElementById('ghRepo').value || 'schedule';
+  const dest = window._itineraryData.dest;
+  if (!document.getElementById('ghFilename').value) {
+    document.getElementById('ghFilename').value = dest.toLowerCase().replace(/[^a-z0-9一-鿿]/g,'-').replace(/-+/g,'-').slice(0,40) + '-' + new Date().toISOString().slice(0,10);
+  }
+  document.getElementById('deployModal').classList.add('show');
+}
+function closeDeploy() { document.getElementById('deployModal').classList.remove('show'); }
+
+async function deployToGitHub() {
+  const token    = document.getElementById('ghToken').value.trim();
+  const user     = document.getElementById('ghUser').value.trim();
+  const repo     = document.getElementById('ghRepo').value.trim();
+  const filename = (document.getElementById('ghFilename').value.trim() || 'itinerary') + '.html';
+  const status   = document.getElementById('deployStatus');
+
+  if (!token || !user || !repo) { status.className='status-msg err'; status.textContent='請填寫 Token、使用者名稱、Repo 名稱'; return; }
+
+  status.className='status-msg'; status.textContent='部署中…'; status.style.display='block';
+
+  const content = btoa(unescape(encodeURIComponent(window._itineraryData.html)));
+  const apiBase = `https://api.github.com/repos/${user}/${repo}/contents/${filename}`;
+
+  try {
+    // check if file exists (get SHA)
+    let sha;
+    const getRes = await fetch(apiBase, { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+    if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
+
+    const body = { message: `add itinerary: ${filename}`, content, ...(sha ? { sha } : {}) };
+    const putRes = await fetch(apiBase, {
+      method: 'PUT',
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (putRes.ok) {
+      const pageUrl = `https://${user}.github.io/${repo}/${filename}`;
+      status.className='status-msg ok';
+      status.innerHTML = `✅ 部署成功！<br>約 1-2 分鐘後可瀏覽：<br><a href="${pageUrl}" target="_blank" style="color:#059669">${pageUrl}</a>`;
+    } else {
+      const err = await putRes.json();
+      throw new Error(err.message || putRes.status);
+    }
+  } catch(e) {
+    status.className='status-msg err';
+    status.textContent = '❌ 部署失敗：' + e.message;
+  }
+}
+</script>
+</body>
+</html>
