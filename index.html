@@ -3,327 +3,736 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>旅遊行程自動產生器</title>
+<title>旅遊行程管理</title>
 <style>
-  :root {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --accent: #f59e0b;
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --text: #1e293b;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --radius: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --accent: #f59e0b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --radius: 12px;
+  --danger: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* ── Header ── */
-  header {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    color: #fff;
-    padding: 2rem 1.5rem 3rem;
-    text-align: center;
-  }
-  header h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 700; letter-spacing: -0.5px; }
-  header p { margin-top: .5rem; opacity: .85; font-size: .95rem; }
+/* Header */
+header {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: #fff;
+  padding: 1.5rem 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+}
+header h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 700; }
+header p { margin-top: .35rem; opacity: .85; font-size: .9rem; }
+.settings-btn {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: rgba(255,255,255,.2); border: 1.5px solid rgba(255,255,255,.4);
+  color: #fff; border-radius: 8px; padding: .45rem .8rem;
+  cursor: pointer; font-size: .85rem; font-weight: 600;
+  transition: background .2s;
+}
+.settings-btn:hover { background: rgba(255,255,255,.35); }
 
-  /* ── Form card ── */
-  .form-wrap {
-    max-width: 680px;
-    margin: -1.5rem auto 2rem;
-    padding: 0 1rem;
-  }
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 24px rgba(0,0,0,.08);
-    padding: 2rem 1.75rem;
-  }
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-  }
-  .full { grid-column: 1 / -1; }
-  label { display: block; font-size: .85rem; font-weight: 600; color: var(--muted); margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .04em; }
-  input, textarea {
-    width: 100%;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: .65rem .9rem;
-    font-size: 1rem;
-    font-family: inherit;
-    color: var(--text);
-    background: #fff;
-    transition: border-color .2s;
-    outline: none;
-  }
-  input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
-  textarea { resize: vertical; min-height: 80px; }
+/* Settings panel */
+.settings-panel {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.25rem 1.5rem;
+  display: none;
+}
+.settings-panel.open { display: block; }
+.settings-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: .75rem;
+  align-items: end;
+}
+.settings-panel label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: #94a3b8; margin-bottom: .3rem; display: block; }
+.settings-panel input {
+  width: 100%; background: #334155; border: 1.5px solid #475569;
+  border-radius: 8px; padding: .55rem .8rem; color: #e2e8f0;
+  font-size: .9rem; outline: none;
+}
+.settings-panel input:focus { border-color: var(--primary); }
+.btn-save-cfg {
+  background: var(--primary); color: #fff; border: none;
+  border-radius: 8px; padding: .6rem 1.2rem;
+  font-weight: 700; cursor: pointer; white-space: nowrap;
+  font-size: .9rem;
+}
+.btn-save-cfg:hover { background: var(--primary-dark); }
 
-  .stop-list { display: flex; flex-direction: column; gap: .65rem; }
-  .stop-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    gap: .5rem;
-    align-items: end;
-    background: #f1f5f9;
-    border-radius: 8px;
-    padding: .75rem;
-  }
-  .stop-item input { background: #fff; font-size: .9rem; }
-  .btn-rm {
-    background: #fee2e2; border: none; border-radius: 6px;
-    width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem;
-    color: #dc2626; display: flex; align-items: center; justify-content: center;
-  }
-  .btn-add {
-    display: flex; align-items: center; gap: .4rem;
-    background: none; border: 1.5px dashed var(--border);
-    border-radius: 8px; padding: .6rem 1rem;
-    cursor: pointer; color: var(--muted); font-size: .9rem; font-weight: 600;
-    width: 100%; justify-content: center; margin-top: .5rem;
-    transition: background .2s, color .2s;
-  }
-  .btn-add:hover { background: var(--bg); color: var(--primary); border-color: var(--primary); }
+/* Tabs */
+.tabs {
+  max-width: 680px;
+  margin: -1rem auto 0;
+  padding: 0 1rem;
+  display: flex;
+  gap: .5rem;
+  position: relative;
+  z-index: 10;
+}
+.tab {
+  flex: 1; padding: .7rem 1rem;
+  background: rgba(255,255,255,.7);
+  border: 1.5px solid var(--border);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  font-weight: 600; font-size: .9rem;
+  cursor: pointer; color: var(--muted);
+  transition: background .2s, color .2s;
+}
+.tab.active {
+  background: var(--card); color: var(--primary);
+  border-color: var(--border);
+}
 
-  .btn-generate {
-    display: block; width: 100%;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff; border: none; border-radius: 10px;
-    padding: .9rem 1.5rem; font-size: 1.1rem; font-weight: 700;
-    cursor: pointer; margin-top: 1.75rem;
-    box-shadow: 0 4px 14px rgba(59,130,246,.35);
-    transition: transform .15s, box-shadow .15s;
-  }
-  .btn-generate:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,.45); }
-  .btn-generate:active { transform: translateY(0); }
+/* Tab panels */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.panel-wrap {
+  max-width: 680px;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
+}
+.panel-card {
+  background: var(--card);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  padding: 1.75rem;
+  border: 1.5px solid var(--border);
+  border-top: none;
+}
 
-  /* ── Output ── */
-  #output { max-width: 680px; margin: 0 auto 3rem; padding: 0 1rem; }
-  .action-bar {
-    display: flex; gap: .75rem; margin-bottom: 1.25rem; flex-wrap: wrap;
-  }
-  .btn-action {
-    flex: 1; min-width: 140px;
-    display: flex; align-items: center; justify-content: center; gap: .4rem;
-    padding: .7rem 1rem; border-radius: 8px; border: none;
-    font-size: .9rem; font-weight: 600; cursor: pointer;
-    transition: transform .15s, box-shadow .15s;
-  }
-  .btn-copy { background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; }
-  .btn-copy:hover { background: #d1fae5; }
-  .btn-print { background: #eff6ff; color: var(--primary-dark); border: 1.5px solid #bfdbfe; }
-  .btn-print:hover { background: #dbeafe; }
-  .btn-deploy { background: #fef3c7; color: #b45309; border: 1.5px solid #fcd34d; }
-  .btn-deploy:hover { background: #fde68a; }
+/* List view */
+.list-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.25rem;
+}
+.list-toolbar h3 { font-size: 1rem; font-weight: 700; color: var(--text); }
+.btn-refresh {
+  background: #eff6ff; color: var(--primary-dark);
+  border: 1.5px solid #bfdbfe; border-radius: 7px;
+  padding: .45rem .9rem; font-size: .85rem; font-weight: 600;
+  cursor: pointer;
+}
+.btn-refresh:hover { background: #dbeafe; }
+.btn-refresh:disabled { opacity: .5; cursor: default; }
 
-  /* ── Itinerary card ── */
-  .itinerary-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 24px rgba(0,0,0,.08);
-    overflow: hidden;
-  }
-  .itinerary-header {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    color: #fff; padding: 1.75rem 1.75rem 1.25rem;
-  }
-  .itinerary-header h2 { font-size: 1.5rem; font-weight: 700; }
-  .itinerary-header .meta { margin-top: .5rem; opacity: .85; font-size: .9rem; display: flex; flex-wrap: wrap; gap: .75rem; }
-  .meta-item { display: flex; align-items: center; gap: .3rem; }
-  .desc-box { background: rgba(255,255,255,.15); border-radius: 8px; padding: .75rem 1rem; margin-top: 1rem; font-size: .9rem; line-height: 1.6; }
+.date-group { margin-bottom: 1.25rem; }
+.date-group-label {
+  font-size: .8rem; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: .6rem; padding-bottom: .4rem;
+  border-bottom: 1.5px solid var(--border);
+}
+.itinerary-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .85rem 1rem; border-radius: 10px;
+  border: 1.5px solid var(--border); margin-bottom: .5rem;
+  background: var(--bg); cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+}
+.itinerary-item:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(59,130,246,.12); }
+.item-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.item-info { flex: 1; min-width: 0; }
+.item-dest { font-weight: 700; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-dates { font-size: .8rem; color: var(--muted); margin-top: .15rem; }
+.item-actions { display: flex; gap: .4rem; flex-shrink: 0; }
+.btn-item {
+  padding: .4rem .75rem; border-radius: 7px; border: none;
+  font-size: .82rem; font-weight: 600; cursor: pointer;
+}
+.btn-load { background: #eff6ff; color: var(--primary-dark); }
+.btn-load:hover { background: #dbeafe; }
+.btn-delete { background: #fef2f2; color: var(--danger); }
+.btn-delete:hover { background: #fee2e2; }
 
-  .day-section { padding: 1.5rem 1.75rem; border-bottom: 1px solid var(--border); }
-  .day-section:last-child { border-bottom: none; }
-  .day-label {
-    display: inline-flex; align-items: center; gap: .4rem;
-    background: var(--primary); color: #fff;
-    border-radius: 20px; padding: .3rem .9rem;
-    font-size: .8rem; font-weight: 700; margin-bottom: 1rem;
-    letter-spacing: .04em;
-  }
-  .timeline { position: relative; padding-left: 1.75rem; }
-  .timeline::before {
-    content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px;
-    width: 2px; background: var(--border);
-  }
-  .tl-item { position: relative; margin-bottom: 1.1rem; }
-  .tl-item:last-child { margin-bottom: 0; }
-  .tl-dot {
-    position: absolute; left: -1.75rem; top: 4px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--primary); border: 2.5px solid #fff;
-    box-shadow: 0 0 0 2px var(--primary);
-  }
-  .tl-dot.accent { background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-  .tl-time { font-size: .8rem; font-weight: 700; color: var(--muted); letter-spacing: .05em; }
-  .tl-name { font-size: 1rem; font-weight: 600; margin: .15rem 0; }
-  .tl-note { font-size: .85rem; color: var(--muted); line-height: 1.5; }
-  .map-link {
-    display: inline-flex; align-items: center; gap: .3rem;
-    margin-top: .3rem; font-size: .82rem; color: var(--primary);
-    text-decoration: none; font-weight: 600;
-  }
-  .map-link:hover { text-decoration: underline; }
+.empty-state {
+  text-align: center; padding: 2.5rem 1rem; color: var(--muted);
+}
+.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+.empty-state p { font-size: .9rem; line-height: 1.6; }
 
-  /* deploy modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.5); z-index: 100;
-    align-items: center; justify-content: center; padding: 1rem;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: #fff; border-radius: var(--radius); padding: 2rem;
-    max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.2);
-  }
-  .modal h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; }
-  .modal p { font-size: .9rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.6; }
-  .modal input { margin-bottom: .75rem; }
-  .modal-btns { display: flex; gap: .75rem; margin-top: 1rem; }
-  .modal-btns button { flex: 1; padding: .7rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: .95rem; }
-  .btn-ok { background: var(--primary); color: #fff; }
-  .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
-  .status-msg { font-size: .85rem; margin-top: .75rem; padding: .5rem .75rem; border-radius: 6px; display: none; }
-  .status-msg.ok { background: #ecfdf5; color: #059669; display: block; }
-  .status-msg.err { background: #fef2f2; color: #dc2626; display: block; }
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+.full { grid-column: 1 / -1; }
+label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .04em; }
+input, textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .85rem;
+  font-size: .95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  transition: border-color .2s;
+  outline: none;
+}
+input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+textarea { resize: vertical; min-height: 72px; }
 
-  @media (max-width: 520px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .full { grid-column: 1; }
-    .stop-item { grid-template-columns: 1fr 1fr; }
-    .stop-item input:nth-child(3) { grid-column: 1 / -1; }
-    .card { padding: 1.5rem 1.25rem; }
-    .day-section { padding: 1.25rem; }
-    .itinerary-header { padding: 1.25rem; }
-  }
-  @media print {
-    header, .form-wrap, .action-bar { display: none !important; }
-    #output { margin: 0; padding: 0; max-width: 100%; }
-    .itinerary-card { box-shadow: none; }
-    .day-section { page-break-inside: avoid; }
-  }
+.stop-list { display: flex; flex-direction: column; gap: .6rem; }
+.stop-item {
+  display: grid;
+  grid-template-columns: 90px 1fr 1fr 1fr 36px;
+  gap: .45rem;
+  align-items: end;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: .7rem;
+}
+.stop-item input { background: #fff; font-size: .88rem; }
+.btn-rm {
+  background: #fee2e2; border: none; border-radius: 6px;
+  width: 34px; height: 34px; cursor: pointer; font-size: 1rem;
+  color: #dc2626; display: flex; align-items: center; justify-content: center;
+}
+.btn-add {
+  display: flex; align-items: center; gap: .4rem;
+  background: none; border: 1.5px dashed var(--border);
+  border-radius: 8px; padding: .55rem 1rem;
+  cursor: pointer; color: var(--muted); font-size: .88rem; font-weight: 600;
+  width: 100%; justify-content: center; margin-top: .5rem;
+  transition: background .2s, color .2s;
+}
+.btn-add:hover { background: var(--bg); color: var(--primary); border-color: var(--primary); }
+
+.form-actions {
+  display: flex; gap: .75rem; margin-top: 1.5rem;
+}
+.btn-preview {
+  flex: 1; background: #f1f5f9; color: var(--text);
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: .8rem 1rem; font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: background .2s;
+}
+.btn-preview:hover { background: #e2e8f0; }
+.btn-save-gh {
+  flex: 2;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff; border: none; border-radius: 10px;
+  padding: .8rem 1.5rem; font-size: 1rem; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59,130,246,.35);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-save-gh:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,.45); }
+.btn-save-gh:disabled { opacity: .6; cursor: default; transform: none; }
+
+.save-status {
+  margin-top: .85rem; padding: .55rem .85rem;
+  border-radius: 8px; font-size: .88rem; display: none;
+}
+.save-status.ok { background: #ecfdf5; color: #059669; display: block; }
+.save-status.err { background: #fef2f2; color: #dc2626; display: block; }
+.save-status.loading { background: #eff6ff; color: var(--primary-dark); display: block; }
+
+/* Preview */
+.preview-wrap { margin-top: 1.5rem; }
+.preview-toolbar {
+  display: flex; gap: .65rem; margin-bottom: 1rem; flex-wrap: wrap;
+}
+.btn-action {
+  flex: 1; min-width: 120px;
+  display: flex; align-items: center; justify-content: center; gap: .35rem;
+  padding: .65rem .85rem; border-radius: 8px; border: none;
+  font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+.btn-copy { background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; }
+.btn-copy:hover { background: #d1fae5; }
+.btn-print { background: #eff6ff; color: var(--primary-dark); border: 1.5px solid #bfdbfe; }
+.btn-print:hover { background: #dbeafe; }
+
+/* Itinerary card */
+.itinerary-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+.itinerary-header {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: #fff; padding: 1.5rem 1.75rem 1.1rem;
+}
+.itinerary-header h2 { font-size: 1.4rem; font-weight: 700; }
+.itinerary-header .meta { margin-top: .45rem; opacity: .85; font-size: .88rem; display: flex; flex-wrap: wrap; gap: .65rem; }
+.desc-box { background: rgba(255,255,255,.15); border-radius: 8px; padding: .65rem .9rem; margin-top: .85rem; font-size: .88rem; line-height: 1.6; }
+.day-section { padding: 1.35rem 1.75rem; border-bottom: 1px solid var(--border); }
+.day-section:last-child { border-bottom: none; }
+.day-label {
+  display: inline-flex; align-items: center; gap: .35rem;
+  background: var(--primary); color: #fff;
+  border-radius: 20px; padding: .25rem .85rem;
+  font-size: .78rem; font-weight: 700; margin-bottom: .9rem;
+}
+.timeline { position: relative; padding-left: 1.75rem; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.tl-item { position: relative; margin-bottom: 1rem; }
+.tl-item:last-child { margin-bottom: 0; }
+.tl-dot { position: absolute; left: -1.75rem; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 2.5px solid #fff; box-shadow: 0 0 0 2px var(--primary); }
+.tl-dot.accent { background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.tl-time { font-size: .78rem; font-weight: 700; color: var(--muted); letter-spacing: .05em; }
+.tl-name { font-size: .97rem; font-weight: 600; margin: .12rem 0; }
+.tl-note { font-size: .83rem; color: var(--muted); line-height: 1.5; }
+.map-link { display: inline-flex; align-items: center; gap: .3rem; margin-top: .25rem; font-size: .8rem; color: var(--primary); text-decoration: none; font-weight: 600; }
+.map-link:hover { text-decoration: underline; }
+
+.editing-badge {
+  display: inline-block;
+  background: #fef3c7; color: #92400e;
+  border-radius: 6px; padding: .25rem .65rem;
+  font-size: .78rem; font-weight: 700; margin-bottom: 1rem;
+}
+
+@media (max-width: 540px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .full { grid-column: 1; }
+  .stop-item { grid-template-columns: 80px 1fr 36px; }
+  .stop-item > div:nth-child(3), .stop-item > div:nth-child(4) { grid-column: 1 / -1; }
+  .panel-card { padding: 1.25rem; }
+  .settings-inner { grid-template-columns: 1fr; }
+}
+@media print {
+  header, .tabs, .panel-wrap > :not(.preview-wrap) { display: none !important; }
+  .preview-toolbar { display: none !important; }
+  .itinerary-card { box-shadow: none; }
+  .day-section { page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>✈️ 旅遊行程自動產生器</h1>
-  <p>填寫資訊，一鍵產生精美行程表，部署至手機可直接瀏覽</p>
+  <h1>✈️ 旅遊行程管理</h1>
+  <p>行程自動存入 GitHub，隨時讀取修改</p>
+  <button class="settings-btn" onclick="toggleSettings()">⚙️ 設定</button>
 </header>
 
-<div class="form-wrap">
-  <div class="card">
-    <div class="form-grid">
-      <div class="full">
-        <label>🗺️ 旅遊目的地</label>
-        <input id="destInput" type="text" placeholder="Ex:東京">
-      </div>
-      <div>
-        <label>📅 旅遊起始日期</label>
-        <input id="startInput" type="date">
-      </div>
-      <div>
-        <label>🏁 旅遊結束日期</label>
-        <input id="endInput" type="date">
-      </div>
-      <div class="full">
-        <label>📝 旅遊說明</label>
-        <textarea id="descInput" placeholder="簡單描述這次旅遊的主題或目的…"></textarea>
-      </div>
-      <div class="full">
-        <label>📍 景點行程安排</label>
-        <div class="stop-list" id="stopList"></div>
-        <button class="btn-add" onclick="addStop()">＋ 新增景點 / 行程</button>
-      </div>
+<!-- Settings Panel -->
+<div id="settingsPanel" class="settings-panel">
+  <div class="settings-inner">
+    <div>
+      <label>GitHub Token</label>
+      <input id="cfgToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
     </div>
-    <button class="btn-generate" onclick="generate()">🚀 產生行程表</button>
+    <div>
+      <label>使用者名稱</label>
+      <input id="cfgUser" type="text" placeholder="Leooooooo121">
+    </div>
+    <div>
+      <label>Repository</label>
+      <input id="cfgRepo" type="text" placeholder="schedule">
+    </div>
+    <button class="btn-save-cfg" onclick="saveSettings()">儲存</button>
   </div>
 </div>
 
-<div id="output" style="display:none">
-  <div class="action-bar">
-    <button class="btn-action btn-copy" onclick="copyText()">📋 複製行程文字</button>
-    <button class="btn-action btn-print" onclick="window.print()">🖨️ 列印 / 儲存 PDF</button>
-    <button class="btn-action btn-deploy" onclick="openDeploy()">🚀 部署到 GitHub Pages</button>
-  </div>
-  <div class="itinerary-card" id="itineraryCard"></div>
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" id="tab-list" onclick="switchTab('list')">📂 我的行程</button>
+  <button class="tab" id="tab-edit" onclick="switchTab('edit')">✏️ 新增 / 編輯</button>
 </div>
 
-<!-- Deploy Modal -->
-<div class="modal-overlay" id="deployModal">
-  <div class="modal">
-    <h3>🚀 部署行程表到 GitHub Pages</h3>
-    <p>行程表會以獨立 HTML 檔案儲存到你的 GitHub repo，並自動部署到 GitHub Pages，手機可直接瀏覽。</p>
-    <label>GitHub Token（需 repo 權限）</label>
-    <input id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-    <label>GitHub 使用者名稱</label>
-    <input id="ghUser" type="text" placeholder="Leooooooo121">
-    <label>Repository 名稱</label>
-    <input id="ghRepo" type="text" placeholder="schedule">
-    <label>行程檔名（不含 .html）</label>
-    <input id="ghFilename" type="text" placeholder="tokyo-2026">
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeDeploy()">取消</button>
-      <button class="btn-ok" onclick="deployToGitHub()">部署</button>
+<!-- Panel: My Itineraries -->
+<div id="panel-list" class="tab-panel active">
+  <div class="panel-wrap">
+    <div class="panel-card">
+      <div class="list-toolbar">
+        <h3>已儲存的行程</h3>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn-refresh" onclick="newItinerary()" style="background:#ecfdf5;color:#059669;border-color:#6ee7b7">＋ 新增</button>
+          <button class="btn-refresh" id="refreshBtn" onclick="loadItineraryList()">↻ 重新載入</button>
+        </div>
+      </div>
+      <div id="itineraryList">
+        <div class="empty-state">
+          <div class="empty-icon">🗺️</div>
+          <p>尚未載入行程<br>請先設定 GitHub 憑證，然後點「重新載入」</p>
+        </div>
+      </div>
     </div>
-    <div class="status-msg" id="deployStatus"></div>
+  </div>
+</div>
+
+<!-- Panel: Create / Edit -->
+<div id="panel-edit" class="tab-panel">
+  <div class="panel-wrap">
+    <div class="panel-card">
+      <div id="editingBadge" style="display:none" class="editing-badge">📝 編輯中：<span id="editingName"></span></div>
+      <div class="form-grid">
+        <div class="full">
+          <label>📁 旅遊專案名稱（資料夾名稱）</label>
+          <input id="projectInput" type="text" placeholder="Ex: 2026東京春節之旅">
+        </div>
+        <div class="full">
+          <label>🗺️ 旅遊目的地</label>
+          <input id="destInput" type="text" placeholder="Ex: 東京">
+        </div>
+        <div>
+          <label>📅 開始日期</label>
+          <input id="startInput" type="date">
+        </div>
+        <div>
+          <label>🏁 結束日期</label>
+          <input id="endInput" type="date">
+        </div>
+        <div class="full">
+          <label>📝 旅遊說明</label>
+          <textarea id="descInput" placeholder="簡單描述這次旅遊的主題或目的…"></textarea>
+        </div>
+        <div class="full">
+          <label>📍 景點行程安排</label>
+          <div class="stop-list" id="stopList"></div>
+          <button class="btn-add" onclick="addStop()">＋ 新增景點 / 行程</button>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-preview" onclick="resetForm()" style="flex:0.6;background:#fef2f2;color:#dc2626;border-color:#fca5a5">🗑 重設</button>
+        <button class="btn-preview" onclick="buildPreview()">👁️ 預覽</button>
+        <button class="btn-save-gh" id="saveBtn" onclick="saveToGitHub()">☁️ 儲存到 GitHub</button>
+      </div>
+      <div class="save-status" id="saveStatus"></div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-wrap" id="previewWrap" style="display:none">
+      <div class="preview-toolbar">
+        <button class="btn-action btn-copy" onclick="copyText()">📋 複製文字</button>
+        <button class="btn-action btn-print" onclick="window.print()">🖨️ 列印 / PDF</button>
+      </div>
+      <div class="itinerary-card" id="itineraryCard"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ─── Default stop template ───────────────────────────────────────────────────
+// ── GitHub API ────────────────────────────────────────────────────────────────
+const GH = {
+  get token() { return localStorage.getItem('gh_token') || ''; },
+  get user()  { return localStorage.getItem('gh_user')  || ''; },
+  get repo()  { return localStorage.getItem('gh_repo')  || ''; },
+  configured() { return this.token && this.user && this.repo; },
+  headers() {
+    return {
+      'Authorization': `token ${this.token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    };
+  },
+  encodePath(path) {
+    return path.split('/').map(s => encodeURIComponent(s)).join('/');
+  },
+
+  async listAll() {
+    const res = await fetch(
+      `https://api.github.com/repos/${this.user}/${this.repo}/git/trees/HEAD?recursive=1`,
+      { headers: this.headers() }
+    );
+    if (res.status === 404) return [];
+    if (!res.ok) throw new Error(`GitHub API 錯誤 (${res.status})`);
+    const data = await res.json();
+    return (data.tree || [])
+      .filter(f => f.type === 'blob' && /^trips\/.+\/itinerary\.json$/.test(f.path))
+      .map(f => {
+        const parts = f.path.split('/');
+        return {
+          path: f.path,
+          project: decodeURIComponent(parts[1])
+        };
+      })
+      .sort((a, b) => a.project.localeCompare(b.project, 'zh-TW'));
+  },
+
+  async load(path) {
+    const res = await fetch(
+      `https://api.github.com/repos/${this.user}/${this.repo}/contents/${this.encodePath(path)}`,
+      { headers: this.headers() }
+    );
+    if (!res.ok) throw new Error(`載入失敗 (${res.status})`);
+    const file = await res.json();
+    const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g, ''))));
+    return { data: JSON.parse(text), sha: file.sha, path };
+  },
+
+  async save(path, data, sha) {
+    const json = JSON.stringify(data, null, 2);
+    const content = btoa(unescape(encodeURIComponent(json)));
+    const body = {
+      message: sha ? `update: ${data.project}` : `add: ${data.project}`,
+      content,
+      ...(sha ? { sha } : {})
+    };
+    const res = await fetch(
+      `https://api.github.com/repos/${this.user}/${this.repo}/contents/${this.encodePath(path)}`,
+      { method: 'PUT', headers: this.headers(), body: JSON.stringify(body) }
+    );
+    if (!res.ok) throw new Error((await res.json()).message || `儲存失敗 (${res.status})`);
+    return (await res.json()).content.sha;
+  },
+
+  async delete(path, sha) {
+    const body = { message: `delete: ${path}`, sha };
+    const res = await fetch(
+      `https://api.github.com/repos/${this.user}/${this.repo}/contents/${this.encodePath(path)}`,
+      { method: 'DELETE', headers: this.headers(), body: JSON.stringify(body) }
+    );
+    if (!res.ok) throw new Error(`刪除失敗 (${res.status})`);
+  }
+};
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+function toggleSettings() {
+  document.getElementById('settingsPanel').classList.toggle('open');
+}
+function saveSettings() {
+  localStorage.setItem('gh_token', document.getElementById('cfgToken').value.trim());
+  localStorage.setItem('gh_user',  document.getElementById('cfgUser').value.trim());
+  localStorage.setItem('gh_repo',  document.getElementById('cfgRepo').value.trim());
+  document.getElementById('settingsPanel').classList.remove('open');
+  loadItineraryList();
+}
+function loadSettingsUI() {
+  document.getElementById('cfgToken').value = GH.token;
+  document.getElementById('cfgUser').value  = GH.user;
+  document.getElementById('cfgRepo').value  = GH.repo;
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+  if (name === 'list') loadItineraryList();
+}
+
+// ── Itinerary list ────────────────────────────────────────────────────────────
+let _listCache = null; // { path → sha }
+
+async function loadItineraryList() {
+  if (!GH.configured()) {
+    setListHTML(`<div class="empty-state"><div class="empty-icon">⚙️</div><p>請先點右上角「設定」輸入 GitHub 憑證</p></div>`);
+    return;
+  }
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true; btn.textContent = '載入中…';
+  try {
+    const items = await GH.listAll();
+    _listCache = {};
+    if (!items.length) {
+      setListHTML(`<div class="empty-state"><div class="empty-icon">🗺️</div><p>目前沒有儲存的行程<br>切換到「新增 / 編輯」頁面建立第一個行程</p></div>`);
+      return;
+    }
+    let html = '';
+    for (const item of items) {
+      const safeProject = escHtml(item.project);
+      const safePath = item.path.replace(/'/g, "\\'");
+      html += `<div class="itinerary-item" onclick="loadItinerary('${safePath}')">
+        <div class="item-icon">✈️</div>
+        <div class="item-info">
+          <div class="item-dest">${safeProject}</div>
+          <div class="item-dates">trips/${safeProject}/itinerary.json</div>
+        </div>
+        <div class="item-actions" onclick="event.stopPropagation()">
+          <button class="btn-item btn-load" onclick="loadItinerary('${safePath}')">載入</button>
+          <button class="btn-item btn-delete" onclick="deleteItinerary('${safePath}')">刪除</button>
+        </div>
+      </div>`;
+    }
+    setListHTML(html);
+  } catch(e) {
+    setListHTML(`<div class="empty-state"><div class="empty-icon">❌</div><p>載入失敗：${escHtml(e.message)}</p></div>`);
+  } finally {
+    btn.disabled = false; btn.textContent = '↻ 重新載入';
+  }
+}
+
+function setListHTML(html) {
+  document.getElementById('itineraryList').innerHTML = html;
+}
+
+async function loadItinerary(path) {
+  if (!GH.configured()) return;
+  setStatus('loading', '載入中…');
+  try {
+    const { data, sha } = await GH.load(path);
+    _currentPath = path;
+    _currentSha  = sha;
+    populateForm(data);
+    switchTab('edit');
+    setStatus('ok', `✅ 已載入「${data.project || data.dest}」行程`);
+    setTimeout(() => setStatus('', ''), 3000);
+  } catch(e) {
+    alert('載入失敗：' + e.message);
+  }
+}
+
+async function deleteItinerary(path) {
+  if (!confirm(`確定要刪除這個行程嗎？`)) return;
+  try {
+    // Need SHA — load it first
+    const { sha } = await GH.load(path);
+    await GH.delete(path, sha);
+    loadItineraryList();
+  } catch(e) {
+    alert('刪除失敗：' + e.message);
+  }
+}
+
+// ── Form ──────────────────────────────────────────────────────────────────────
+let _currentPath = null;
+let _currentSha  = null;
+
 const defaultStops = [
   { time: '09:00', name: '早餐 / 集合出發', note: '在飯店或附近餐廳用餐', map: '' },
-  { time: '10:30', name: '第一景點參觀', note: '自由探索', map: '' },
-  { time: '12:30', name: '午餐', note: '附近特色餐廳', map: '' },
-  { time: '14:00', name: '下午景點 / 購物', note: '自由活動', map: '' },
-  { time: '17:30', name: '晚餐', note: '推薦當地料理', map: '' },
-  { time: '19:30', name: '夜間活動 / 返回', note: '散步或返回住宿', map: '' },
+  { time: '10:30', name: '第一景點參觀',     note: '自由探索',             map: '' },
+  { time: '12:30', name: '午餐',             note: '附近特色餐廳',         map: '' },
+  { time: '14:00', name: '下午景點 / 購物',  note: '自由活動',             map: '' },
+  { time: '17:30', name: '晚餐',             note: '推薦當地料理',         map: '' },
+  { time: '19:30', name: '夜間活動 / 返回',  note: '散步或返回住宿',      map: '' },
 ];
 
-// ─── Stop UI ─────────────────────────────────────────────────────────────────
 function addStop(s = {}) {
   const list = document.getElementById('stopList');
-  const idx = list.children.length;
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = 'stop-item';
   div.innerHTML = `
-    <div><label style="font-size:.75rem">時間 HH:mm</label>
-      <input type="time" value="${s.time||'09:00'}"></div>
-    <div><label style="font-size:.75rem">景點 / 活動名稱</label>
-      <input type="text" placeholder="名稱" value="${s.name||''}"></div>
-    <div><label style="font-size:.75rem">備註說明</label>
-      <input type="text" placeholder="備註（選填）" value="${s.note||''}"></div>
-    <div><label style="font-size:.75rem">Google Maps</label>
-      <input type="url" placeholder="https://maps.app.goo.gl/..." value="${s.map||''}"></div>
+    <div><label style="font-size:.72rem">時間 HH:mm</label>
+      <input type="time" value="${s.time || '09:00'}"></div>
+    <div><label style="font-size:.72rem">景點 / 活動名稱</label>
+      <input type="text" placeholder="名稱" value="${escHtml(s.name || '')}"></div>
+    <div><label style="font-size:.72rem">備註說明</label>
+      <input type="text" placeholder="備註（選填）" value="${escHtml(s.note || '')}"></div>
+    <div><label style="font-size:.72rem">Google Maps</label>
+      <input type="url" placeholder="https://maps.app.goo.gl/..." value="${escHtml(s.map || '')}"></div>
     <button class="btn-rm" onclick="this.parentElement.remove()" title="刪除">✕</button>`;
-  // fix grid for remove btn
-  div.style.gridTemplateColumns = '90px 1fr 1fr 1fr 36px';
   list.appendChild(div);
 }
 
 function getStops() {
   return Array.from(document.getElementById('stopList').children).map(el => {
-    const inputs = el.querySelectorAll('input');
-    return { time: inputs[0].value, name: inputs[1].value, note: inputs[2].value, map: inputs[3].value };
+    const ins = el.querySelectorAll('input');
+    return { time: ins[0].value, name: ins[1].value, note: ins[2].value, map: ins[3].value };
   }).filter(s => s.name.trim());
 }
 
-// Init with defaults
-defaultStops.forEach(addStop);
+function populateForm(data) {
+  document.getElementById('projectInput').value = data.project || '';
+  document.getElementById('destInput').value  = data.dest  || '';
+  document.getElementById('startInput').value = data.start || '';
+  document.getElementById('endInput').value   = data.end   || '';
+  document.getElementById('descInput').value  = data.desc  || '';
+  const list = document.getElementById('stopList');
+  list.innerHTML = '';
+  (data.stops || []).forEach(addStop);
 
-// ─── Date helpers ─────────────────────────────────────────────────────────────
+  const badge = document.getElementById('editingBadge');
+  document.getElementById('editingName').textContent = data.project || data.dest;
+  badge.style.display = 'block';
+
+  document.getElementById('previewWrap').style.display = 'none';
+}
+
+function newItinerary() {
+  resetForm();
+  switchTab('edit');
+}
+
+function resetForm() {
+  _currentPath = null;
+  _currentSha  = null;
+  document.getElementById('projectInput').value = '';
+  document.getElementById('destInput').value  = '';
+  document.getElementById('startInput').value = '';
+  document.getElementById('endInput').value   = '';
+  document.getElementById('descInput').value  = '';
+  const list = document.getElementById('stopList');
+  list.innerHTML = '';
+  defaultStops.forEach(addStop);
+  document.getElementById('editingBadge').style.display = 'none';
+  document.getElementById('previewWrap').style.display = 'none';
+  setStatus('', '');
+}
+
+// ── Save to GitHub ────────────────────────────────────────────────────────────
+async function saveToGitHub() {
+  if (!GH.configured()) {
+    alert('請先在設定中輸入 GitHub 憑證');
+    toggleSettings();
+    return;
+  }
+  const project = document.getElementById('projectInput').value.trim();
+  const dest    = document.getElementById('destInput').value.trim();
+  const start   = document.getElementById('startInput').value;
+  if (!project) { alert('請輸入旅遊專案名稱（資料夾名稱）'); return; }
+  if (!dest)    { alert('請輸入目的地'); return; }
+  if (!start)   { alert('請選擇開始日期'); return; }
+
+  const data = {
+    project,
+    dest,
+    start,
+    end:    document.getElementById('endInput').value   || '',
+    desc:   document.getElementById('descInput').value.trim(),
+    stops:  getStops(),
+    savedAt: new Date().toISOString()
+  };
+
+  const newPath = `trips/${project}/itinerary.json`;
+  const sha = (_currentPath === newPath) ? _currentSha : null;
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  setStatus('loading', '儲存中…');
+
+  try {
+    const newSha = await GH.save(newPath, data, sha);
+    _currentPath = newPath;
+    _currentSha  = newSha;
+    setStatus('ok', `✅ 已儲存到 GitHub：trips/${project}/itinerary.json`);
+    document.getElementById('editingBadge').style.display = 'block';
+    document.getElementById('editingName').textContent = project;
+    buildPreview();
+  } catch(e) {
+    setStatus('err', '❌ 儲存失敗：' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function setStatus(type, msg) {
+  const el = document.getElementById('saveStatus');
+  el.className = 'save-status' + (type ? ' ' + type : '');
+  el.textContent = msg;
+}
+
+// ── Preview ───────────────────────────────────────────────────────────────────
 function parseDT(val) {
   if (!val) return null;
   const [y, m, d] = val.split('-').map(Number);
   return new Date(y, m - 1, d);
 }
 function fmtDate(d) {
-  return d.toLocaleDateString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit', weekday:'short' });
+  return d.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' });
 }
 function daysBetween(a, b) {
   const diff = new Date(b.getFullYear(), b.getMonth(), b.getDate()) -
@@ -331,86 +740,70 @@ function daysBetween(a, b) {
   return Math.max(1, Math.round(diff / 86400000) + 1);
 }
 
-// ─── Generate ────────────────────────────────────────────────────────────────
-function generate() {
+function buildPreview() {
   const dest  = document.getElementById('destInput').value.trim() || '旅遊目的地';
   const start = parseDT(document.getElementById('startInput').value);
   const end   = parseDT(document.getElementById('endInput').value);
   const desc  = document.getElementById('descInput').value.trim();
   const stops = getStops();
 
-  if (!start) { alert('請選擇開始日期時間'); return; }
+  if (!start) { alert('請選擇開始日期'); return; }
 
-  const days   = end ? daysBetween(start, end) : 1;
-  const card   = document.getElementById('itineraryCard');
-  const output = document.getElementById('output');
-
-  // Build header
+  const days = end ? daysBetween(start, end) : 1;
   let html = `
   <div class="itinerary-header">
-    <h2>📍 ${dest}</h2>
+    <h2>📍 ${escHtml(dest)}</h2>
     <div class="meta">
-      <span class="meta-item">📅 ${fmtDate(start)}${end && end>start ? ' → ' + fmtDate(end) : ''}</span>
-      <span class="meta-item">🗓 共 ${days} 天</span>
+      <span>📅 ${fmtDate(start)}${end && end > start ? ' → ' + fmtDate(end) : ''}</span>
+      <span>🗓 共 ${days} 天</span>
     </div>
-    ${desc ? `<div class="desc-box">💬 ${desc}</div>` : ''}
+    ${desc ? `<div class="desc-box">💬 ${escHtml(desc)}</div>` : ''}
   </div>`;
 
-  // Distribute stops across days
   const perDay = Math.ceil(stops.length / days) || 1;
   for (let d = 0; d < days; d++) {
     const dayDate = new Date(start);
     dayDate.setDate(start.getDate() + d);
     const dayStops = stops.slice(d * perDay, (d + 1) * perDay);
-
     html += `<div class="day-section">
-      <div class="day-label">第 ${d+1} 天 &nbsp;${fmtDate(dayDate)}</div>
+      <div class="day-label">第 ${d + 1} 天 &nbsp;${fmtDate(dayDate)}</div>
       <div class="timeline">`;
-
-    if (dayStops.length === 0) {
-      html += `<div class="tl-item"><div class="tl-dot"></div>
-        <div class="tl-note">自由活動日</div></div>`;
+    if (!dayStops.length) {
+      html += `<div class="tl-item"><div class="tl-dot"></div><div class="tl-note">自由活動日</div></div>`;
     } else {
       dayStops.forEach((s, i) => {
-        const isAccent = i === 0 || i === dayStops.length - 1;
+        const accent = i === 0 || i === dayStops.length - 1;
         html += `<div class="tl-item">
-          <div class="tl-dot${isAccent ? ' accent' : ''}"></div>
-          <div class="tl-time">${s.time}</div>
+          <div class="tl-dot${accent ? ' accent' : ''}"></div>
+          <div class="tl-time">${escHtml(s.time)}</div>
           <div class="tl-name">${escHtml(s.name)}</div>
           ${s.note ? `<div class="tl-note">${escHtml(s.note)}</div>` : ''}
-          ${s.map ? `<a class="map-link" href="${escHtml(s.map)}" target="_blank">📍 查看地圖</a>` : ''}
+          ${s.map  ? `<a class="map-link" href="${escHtml(s.map)}" target="_blank">📍 查看地圖</a>` : ''}
         </div>`;
       });
     }
     html += `</div></div>`;
   }
 
-  card.innerHTML = html;
-  output.style.display = 'block';
-  output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('itineraryCard').innerHTML = html;
+  document.getElementById('previewWrap').style.display = 'block';
 
-  // cache for deploy
-  window._itineraryData = { dest, start, end, desc, stops, days, html: buildStandaloneHTML(dest, start, end, desc, stops, days, card.innerHTML) };
+  window._previewData = { dest, start, end, desc, stops, days };
+  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ─── Copy text ───────────────────────────────────────────────────────────────
+// ── Copy text ─────────────────────────────────────────────────────────────────
 function copyText() {
-  const d = window._itineraryData;
+  const d = window._previewData;
   if (!d) return;
-  let txt = `📍 ${d.dest} 旅遊行程\n`;
-  txt += `📅 ${fmtDate(d.start)}${d.end ? ' → ' + fmtDate(d.end) : ''}\n`;
+  let txt = `📍 ${d.dest} 旅遊行程\n📅 ${fmtDate(d.start)}${d.end ? ' → ' + fmtDate(d.end) : ''}\n`;
   if (d.desc) txt += `💬 ${d.desc}\n`;
   txt += '\n';
   const perDay = Math.ceil(d.stops.length / d.days) || 1;
   for (let i = 0; i < d.days; i++) {
     const dd = new Date(d.start); dd.setDate(d.start.getDate() + i);
     txt += `【第${i+1}天】${fmtDate(dd)}\n`;
-    const sl = d.stops.slice(i*perDay, (i+1)*perDay);
-    sl.forEach(s => {
+    d.stops.slice(i * perDay, (i + 1) * perDay).forEach(s => {
       txt += `  ${s.time} ${s.name}`;
       if (s.note) txt += `（${s.note}）`;
       if (s.map) txt += `\n        📍 ${s.map}`;
@@ -421,99 +814,14 @@ function copyText() {
   navigator.clipboard.writeText(txt).then(() => alert('✅ 行程已複製到剪貼簿！'));
 }
 
-// ─── Standalone HTML for deploy ──────────────────────────────────────────────
-function buildStandaloneHTML(dest, start, end, desc, stops, days, bodyInner) {
-  return `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>${escHtml(dest)} 行程表</title>
-<style>
-:root{--primary:#3b82f6;--accent:#f59e0b;--bg:#f8fafc;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1rem}
-.itinerary-card{max-width:680px;margin:0 auto;background:var(--card);border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden}
-.itinerary-header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:1.75rem 1.75rem 1.25rem}
-.itinerary-header h2{font-size:1.5rem;font-weight:700}
-.meta{margin-top:.5rem;opacity:.85;font-size:.9rem;display:flex;flex-wrap:wrap;gap:.75rem}
-.desc-box{background:rgba(255,255,255,.15);border-radius:8px;padding:.75rem 1rem;margin-top:1rem;font-size:.9rem;line-height:1.6}
-.day-section{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border)}
-.day-section:last-child{border-bottom:none}
-.day-label{display:inline-flex;align-items:center;background:var(--primary);color:#fff;border-radius:20px;padding:.3rem .9rem;font-size:.8rem;font-weight:700;margin-bottom:1rem}
-.timeline{position:relative;padding-left:1.75rem}
-.timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border)}
-.tl-item{position:relative;margin-bottom:1.1rem}
-.tl-item:last-child{margin-bottom:0}
-.tl-dot{position:absolute;left:-1.75rem;top:4px;width:16px;height:16px;border-radius:50%;background:var(--primary);border:2.5px solid #fff;box-shadow:0 0 0 2px var(--primary)}
-.tl-dot.accent{background:var(--accent);box-shadow:0 0 0 2px var(--accent)}
-.tl-time{font-size:.8rem;font-weight:700;color:var(--muted)}
-.tl-name{font-size:1rem;font-weight:600;margin:.15rem 0}
-.tl-note{font-size:.85rem;color:var(--muted);line-height:1.5}
-.map-link{display:inline-flex;align-items:center;gap:.3rem;margin-top:.3rem;font-size:.82rem;color:var(--primary);text-decoration:none;font-weight:600}
-@media(max-width:520px){.day-section{padding:1.25rem}.itinerary-header{padding:1.25rem}}
-</style>
-</head>
-<body>
-<div class="itinerary-card">${bodyInner}</div>
-</body>
-</html>`;
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── Deploy modal ─────────────────────────────────────────────────────────────
-function openDeploy() {
-  if (!window._itineraryData) { alert('請先產生行程表'); return; }
-  // auto-fill defaults
-  document.getElementById('ghUser').value = document.getElementById('ghUser').value || 'Leooooooo121';
-  document.getElementById('ghRepo').value = document.getElementById('ghRepo').value || 'schedule';
-  const dest = window._itineraryData.dest;
-  if (!document.getElementById('ghFilename').value) {
-    document.getElementById('ghFilename').value = dest.toLowerCase().replace(/[^a-z0-9一-鿿]/g,'-').replace(/-+/g,'-').slice(0,40) + '-' + new Date().toISOString().slice(0,10);
-  }
-  document.getElementById('deployModal').classList.add('show');
-}
-function closeDeploy() { document.getElementById('deployModal').classList.remove('show'); }
-
-async function deployToGitHub() {
-  const token    = document.getElementById('ghToken').value.trim();
-  const user     = document.getElementById('ghUser').value.trim();
-  const repo     = document.getElementById('ghRepo').value.trim();
-  const filename = (document.getElementById('ghFilename').value.trim() || 'itinerary') + '.html';
-  const status   = document.getElementById('deployStatus');
-
-  if (!token || !user || !repo) { status.className='status-msg err'; status.textContent='請填寫 Token、使用者名稱、Repo 名稱'; return; }
-
-  status.className='status-msg'; status.textContent='部署中…'; status.style.display='block';
-
-  const content = btoa(unescape(encodeURIComponent(window._itineraryData.html)));
-  const apiBase = `https://api.github.com/repos/${user}/${repo}/contents/${filename}`;
-
-  try {
-    // check if file exists (get SHA)
-    let sha;
-    const getRes = await fetch(apiBase, { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
-    if (getRes.ok) { const j = await getRes.json(); sha = j.sha; }
-
-    const body = { message: `add itinerary: ${filename}`, content, ...(sha ? { sha } : {}) };
-    const putRes = await fetch(apiBase, {
-      method: 'PUT',
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    if (putRes.ok) {
-      const pageUrl = `https://${user}.github.io/${repo}/${filename}`;
-      status.className='status-msg ok';
-      status.innerHTML = `✅ 部署成功！<br>約 1-2 分鐘後可瀏覽：<br><a href="${pageUrl}" target="_blank" style="color:#059669">${pageUrl}</a>`;
-    } else {
-      const err = await putRes.json();
-      throw new Error(err.message || putRes.status);
-    }
-  } catch(e) {
-    status.className='status-msg err';
-    status.textContent = '❌ 部署失敗：' + e.message;
-  }
-}
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadSettingsUI();
+defaultStops.forEach(addStop);
+if (GH.configured()) loadItineraryList();
 </script>
 </body>
 </html>
