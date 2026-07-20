@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大阪自由行 · 行程摘要 Itinerary</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #2563eb;
+            --light-accent: rgba(37, 99, 235, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s ease, border-bottom 0.2s ease;
+            border-bottom: 1.5px dashed rgba(37, 99, 235, 0.4);
+            padding-bottom: 1px;
+        }
+        a:hover {
+            color: #1d4ed8;
+            border-bottom-color: #1d4ed8;
+        }
+
+        /* 背景流動液態彩色泡泡 */
+        .glass-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.55;
+            pointer-events: none;
+            animation: float-blob 20s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, #ff9a9e 0%, #fecfef 100%);
+            top: -40px;
+            left: -40px;
+        }
+
+        .blob-2 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, #a1c4fd 0%, #c2e9fb 100%);
+            bottom: -60px;
+            right: -40px;
+            animation-duration: 25s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, #84fab0 0%, #8fd3f4 100%);
+            top: 35%;
+            left: 55%;
+            animation-duration: 18s;
+            animation-delay: -10s;
+        }
+
+        @keyframes float-blob {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            33% {
+                transform: translate(40px, 60px) scale(1.1) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 30px) scale(0.95) rotate(240deg);
+            }
+            100% {
+                transform: translate(0, 0) scale(1) rotate(360deg);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: none;
+            padding: 40px 24px;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .tabs.active-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            text-align: center;
+            flex: 0 0 calc((100% - 50px) / 6); /* 6 個頁籤均分 */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:first-child:nth-last-child(-n+4),
+        .tab-btn:first-child:nth-last-child(-n+4) ~ .tab-btn {
+            flex: 1 1 0%;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-accent);
+            background-color: rgba(255, 255, 255, 0.55);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn.active {
+            background-color: rgba(37, 99, 235, 0.85);
+            border-color: rgba(37, 99, 235, 0.25);
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .timeline-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .timeline-item:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 8px 24px rgba(31, 38, 135, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .time {
+            font-weight: 700;
+            color: #1d4ed8;
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-right: 18px;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(2px);
+        }
+
+        .location {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .item-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .timeline-item.expanded .item-details {
+            max-height: 450px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .details-content {
+            padding: 20px;
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        .note-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .details-content ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .details-content li {
+            margin-bottom: 8px;
+        }
+
+        .details-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .details-content li::marker {
+            color: var(--primary-accent);
+        }
+
+        .details-p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* 限制內容最大寬度 */
+        .header-title,
+        .tabs,
+        .tab-content {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 背景液態玻璃裝飾泡泡 -->
+<div class="glass-blob blob-1"></div>
+<div class="glass-blob blob-2"></div>
+<div class="glass-blob blob-3"></div>
+
+<div class="container">
+    <div class="header-title">大阪自由行 · 行程摘要</div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'day1')">Day 1</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day2')">Day 2</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day3')">Day 3</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day4')">Day 4</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day5')">Day 5</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day6')">Day 6</button>
+    </div>
+
+    <!-- Day 1 內容 -->
+    <div id="day1" class="tab-content active">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">08:30</span>
+                <span class="location">桃園國際機場 T1 ✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <p class="details-p">準備好護照、登機證，前往第一航廈航空公司櫃檯辦理行李託運與出境手續。預計於 12:15 降落關西國際機場 T1。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">12:15</span>
+                <span class="location">抵達關西國際機場 T1 🛬</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">入境準備</span>
+                    <p class="details-p">辦理日本入境手續與行李提領。請事先填寫好 Visit Japan Web 的入境與海關申報，以加快出關時間。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">12:56</span>
+                <span class="location">交通：搭乘南海電鐵 Rapi:t 特急 🚇</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通接駁</span>
+                    <p class="details-p">出關後前往關西機場站南海電鐵售票口兌換/購買 Rapi:t 特急車票，直達「新今宮」站。</p>
+                    <p class="details-p"><strong>推薦班次時刻表（發車 ➔ 到達）：</strong></p>
+                    <ul>
+                        <li>12:56 發車 ➔ 13:38 到達</li>
+                        <li>13:05 發車 ➔ 13:40 到達</li>
+                        <li>13:09 發車 ➔ 13:52 到達</li>
+                        <li>13:35 發車 ➔ 14:11 到達</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 4 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">14:30</span>
+                <span class="location">抵達 OMO7 飯店放置行李 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">入住：<a href="https://maps.app.goo.gl/cMsBS9Q9rAztxdg9A" target="_blank" onclick="event.stopPropagation();">OMO7 大阪新今宮 by 星野集團 📍</a></p>
+                    <p class="details-p"><strong>交通指引：</strong>位於南海電鐵「新今宮」站北出口出來的右手邊，出站即達。在此連續住宿五晚，無須搬運行李。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 5 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">15:30</span>
+                <span class="location">黑門市場 & 心齋橋 🛍️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">行程攻略</span>
+                    <p class="details-p">放好行李後出發：</p>
+                    <ul>
+                        <li><strong>黑門市場：</strong>品嚐大阪的廚房美食，如烤海鮮、和牛串燒與當季水果。</li>
+                        <li><strong>心齋橋 & 道頓堀：</strong>散步逛街採購藥妝，並與道頓堀運河的固力果跑跑人霓虹招牌合影，享用章魚燒或大阪燒晚餐。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 2 內容 -->
+    <div id="day2" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">08:00</span>
+                <span class="location">出發前往環球影城 🚇</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通路線</span>
+                    <p class="details-p">搭乘OMO7 接駁車。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">日本環球影城 (USJ) 全日遊 🎢</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">園區位置</span>
+                    <p class="details-p">景點連結：<a href="https://maps.app.goo.gl/ufwQguh18DKqmSfV6" target="_blank" onclick="event.stopPropagation();">日本環球影城 📍</a></p>
+                    <p class="details-p">暢玩超級任天堂世界（瑪利歐）、哈利波特的魔法世界、侏羅紀公園與小黃人等高人氣園區。建議提早下載官方 App 進行入園券與預約整理券抽取。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">21:00</span>
+                <span class="location">返回 OMO7 飯店 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">備註</span>
+                    <p class="details-p">搭乘OMO7 接駁車。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 3 內容 -->
+    <div id="day3" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">08:30</span>
+                <span class="location">出發前往京都嵐山 🚂</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通指引</span>
+                    <p class="details-p">根據一日遊行程到指定地點上車。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">10:00</span>
+                <span class="location">嵐山一日遊 🎋</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">嵐山景點</span>
+                    <p class="details-p">在古意盎然的嵐山漫步一日：</p>
+                    <ul>
+                        <li><strong>渡月橋：</strong>橫跨大堰川的代表性地標。</li>
+                        <li><strong>竹林小徑：</strong>感受陽光灑落在茂密綠竹間的清幽氛圍。</li>
+                        <li><strong>野宮神社 & 天龍寺：</strong>祈求緣分與欣賞京都精緻的禪意庭園。</li>
+                        <li><strong>嵐山小火車：</strong>如時間允許，可搭乘嵯峨野觀光鐵道欣賞溪谷美景。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">18:00</span>
+                <span class="location">晚餐與回程 🍽️</span>
+            </div>
+            <div class="item-details">
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 4 內容 -->
+    <div id="day4" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">出發前往古都奈良 🦌</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通指引</span>
+                    <p class="details-p">根據一日遊行程到指定地點上車。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">10:00</span>
+                <span class="location">奈良一日遊 ⛩️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">行程看點</span>
+                    <ul>
+                        <li><strong>奈良公園：</strong>在此可以購買鹿仙貝，與野生梅花鹿進行趣味互動。</li>
+                        <li><strong>東大寺：</strong>世界最大木造建築，參拜巨大莊嚴的奈良大佛，並可體驗著名的鑽柱子活動。</li>
+                        <li><strong>春日大社：</strong>漫步於掛滿古老石燈籠的神社參道，氣氛神聖幽靜。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">17:00</span>
+                <span class="location">回程與美食 🍜</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">美食推薦</span>
+                    <p class="details-p">可以在近鐵奈良站外的商店街品嚐有名的「志津香釜飯」或「中谷堂現搗麻糬」。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 5 內容 -->
+    <div id="day5" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">10:00</span>
+                <span class="location">梅田商圈全日逛街購物 🛍️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">逛街攻略</span>
+                    <p class="details-p">梅田是北大阪的核心樞紐與購物天堂。主要地標推薦：</p>
+                    <ul>
+                        <li><strong>LUCUA & LUCUA 1100：</strong>深受年輕人喜愛的流行指標商場。</li>
+                        <li><strong>Grand Front Osaka：</strong>寬敞舒適的現代化複合購物商圈。</li>
+                        <li><strong>阪急 & 大丸百貨：</strong>高品質精品與伴手禮（如Gateau Festa Harada法式麵包脆餅）的採購地。</li>
+                        <li><strong>Yodobashi Camera / Links Umeda：</strong>電器、玩具與各類品牌非常齊全。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">18:00</span>
+                <span class="location">梅田藍天大廈空中庭園夜景 🌃</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">前往梅田藍天大廈，搭乘奇幻的手扶梯登上 360 度露天空中展望台，飽覽整個大阪市區與淀川的壯麗夜景。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 6 內容 -->
+    <div id="day6" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">10:00</span>
+                <span class="location">辦理退房並前往關西機場 🚇</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">返程準備</span>
+                    <p class="details-p">在 OMO7 大阪新今宮辦理 Check-out。過馬路至新今宮站，搭乘南海電鐵 Rapi:t 特急列車直達關西國際機場。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:30</span>
+                <span class="location">抵達機場與最後伴手禮採購 ✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">登機提醒</span>
+                    <p class="details-p">抵達關西機場第一航廈航空公司櫃檯辦理行李託運與出境手續。出境入關後，可在免稅店進行伴手禮的最後大採購。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">13:25</span>
+                <span class="location">搭機返台：關西機場 T1 ➔ 桃園機場 T1</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <ul>
+                        <li><strong>航班時間：</strong>13:25 起飛 ➔ 15:20 抵達（台灣時間）。</li>
+                        <li>結束愉快豐富的大阪、京都、奈良六天五夜經典關西之旅！</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(event, dayId) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(dayId).classList.add('active');
+        const activeBtn = event.currentTarget;
+        activeBtn.classList.add('active');
+
+        // 將被點擊的頁籤平滑滾動到可見區域中心
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    // 行程詳細備註的展開/收合功能（改由 item-header 觸發）
+    function toggleDetails(headerElement) {
+        const timelineItem = headerElement.closest('.timeline-item');
+        timelineItem.classList.toggle('expanded');
+    }
+
+    // 支援桌面端滑鼠拖拽手動滑動頁籤
+    const tabsContainer = document.querySelector('.tabs');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let hasDragged = false;
+
+    tabsContainer.addEventListener('mousedown', (e) => {
+        isDown = true;
+        tabsContainer.classList.add('active-dragging');
+        startX = e.pageX - tabsContainer.offsetLeft;
+        scrollLeft = tabsContainer.scrollLeft;
+        hasDragged = false;
+    });
+
+    tabsContainer.addEventListener('mouseleave', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mouseup', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - tabsContainer.offsetLeft;
+        const walk = (x - startX) * 1.5; // 滾動速度係數
+        if (Math.abs(walk) > 5) {
+            hasDragged = true;
+        }
+        tabsContainer.scrollLeft = scrollLeft - walk;
+    });
+
+    // 阻止在拖拽時觸發頁籤按鈕的 click 事件
+    tabsContainer.addEventListener('click', (e) => {
+        if (hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+</script>
+
+</body>
+</html>
