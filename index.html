@@ -1,877 +1,317 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>旅遊行程管理</title>
-<style>
-:root {
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --accent: #f59e0b;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #1e293b;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --radius: 12px;
-  --danger: #ef4444;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行行程表 Itinerary</title>
+    <style>
+        :root {
+            --bg-color: #f4f7fc;
+            --container-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border-color: #eef2f7;
 
-/* Header */
-header {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-  color: #fff;
-  padding: 1.5rem 1.5rem 2rem;
-  text-align: center;
-  position: relative;
-}
-header h1 { font-size: clamp(1.4rem, 5vw, 2rem); font-weight: 700; }
-header p { margin-top: .35rem; opacity: .85; font-size: .9rem; }
-.settings-btn {
-  position: absolute; top: 1.2rem; right: 1.2rem;
-  background: rgba(255,255,255,.2); border: 1.5px solid rgba(255,255,255,.4);
-  color: #fff; border-radius: 8px; padding: .45rem .8rem;
-  cursor: pointer; font-size: .85rem; font-weight: 600;
-  transition: background .2s;
-}
-.settings-btn:hover { background: rgba(255,255,255,.35); }
+            --primary-blue: #1e88e5;
+            --light-blue: #e3f2fd;
+            --hover-blue: #1565c0;
+        }
 
-/* Settings panel */
-.settings-panel {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 1.25rem 1.5rem;
-  display: none;
-}
-.settings-panel.open { display: block; }
-.settings-inner {
-  max-width: 680px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: .75rem;
-  align-items: end;
-}
-.settings-panel label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: #94a3b8; margin-bottom: .3rem; display: block; }
-.settings-panel input {
-  width: 100%; background: #334155; border: 1.5px solid #475569;
-  border-radius: 8px; padding: .55rem .8rem; color: #e2e8f0;
-  font-size: .9rem; outline: none;
-}
-.settings-panel input:focus { border-color: var(--primary); }
-.btn-save-cfg {
-  background: var(--primary); color: #fff; border: none;
-  border-radius: 8px; padding: .6rem 1.2rem;
-  font-weight: 700; cursor: pointer; white-space: nowrap;
-  font-size: .9rem;
-}
-.btn-save-cfg:hover { background: var(--primary-dark); }
+        * {
+            box-sizing: border-box;
+        }
 
-/* Tabs */
-.tabs {
-  max-width: 680px;
-  margin: -1rem auto 0;
-  padding: 0 1rem;
-  display: flex;
-  gap: .5rem;
-  position: relative;
-  z-index: 10;
-}
-.tab {
-  flex: 1; padding: .7rem 1rem;
-  background: rgba(255,255,255,.7);
-  border: 1.5px solid var(--border);
-  border-bottom: none;
-  border-radius: 10px 10px 0 0;
-  font-weight: 600; font-size: .9rem;
-  cursor: pointer; color: var(--muted);
-  transition: background .2s, color .2s;
-}
-.tab.active {
-  background: var(--card); color: var(--primary);
-  border-color: var(--border);
-}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 30px 20px;
+        }
 
-/* Tab panels */
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-.panel-wrap {
-  max-width: 680px;
-  margin: 0 auto 2rem;
-  padding: 0 1rem;
-}
-.panel-card {
-  background: var(--card);
-  border-radius: 0 var(--radius) var(--radius) var(--radius);
-  box-shadow: 0 4px 24px rgba(0,0,0,.08);
-  padding: 1.75rem;
-  border: 1.5px solid var(--border);
-  border-top: none;
-}
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            padding: 35px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(30, 136, 229, 0.08);
+        }
 
-/* List view */
-.list-toolbar {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1.25rem;
-}
-.list-toolbar h3 { font-size: 1rem; font-weight: 700; color: var(--text); }
-.btn-refresh {
-  background: #eff6ff; color: var(--primary-dark);
-  border: 1.5px solid #bfdbfe; border-radius: 7px;
-  padding: .45rem .9rem; font-size: .85rem; font-weight: 600;
-  cursor: pointer;
-}
-.btn-refresh:hover { background: #dbeafe; }
-.btn-refresh:disabled { opacity: .5; cursor: default; }
+        .header-title {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
 
-.date-group { margin-bottom: 1.25rem; }
-.date-group-label {
-  font-size: .8rem; font-weight: 700; color: var(--muted);
-  text-transform: uppercase; letter-spacing: .06em;
-  margin-bottom: .6rem; padding-bottom: .4rem;
-  border-bottom: 1.5px solid var(--border);
-}
-.itinerary-item {
-  display: flex; align-items: center; gap: .75rem;
-  padding: .85rem 1rem; border-radius: 10px;
-  border: 1.5px solid var(--border); margin-bottom: .5rem;
-  background: var(--bg); cursor: pointer;
-  transition: border-color .2s, box-shadow .2s;
-}
-.itinerary-item:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(59,130,246,.12); }
-.item-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: linear-gradient(135deg, #1e40af, #3b82f6);
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; flex-shrink: 0;
-}
-.item-info { flex: 1; min-width: 0; }
-.item-dest { font-weight: 700; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.item-dates { font-size: .8rem; color: var(--muted); margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.item-actions { display: flex; gap: .4rem; flex-shrink: 0; }
-.btn-item {
-  padding: .4rem .75rem; border-radius: 7px; border: none;
-  font-size: .82rem; font-weight: 600; cursor: pointer;
-}
-.btn-load { background: #eff6ff; color: var(--primary-dark); }
-.btn-load:hover { background: #dbeafe; }
-.btn-delete { background: #fef2f2; color: var(--danger); }
-.btn-delete:hover { background: #fee2e2; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
 
-.empty-state {
-  text-align: center; padding: 2.5rem 1rem; color: var(--muted);
-}
-.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: .75rem; }
-.empty-state p { font-size: .9rem; line-height: 1.6; }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
 
-/* Form */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.1rem;
-}
-.full { grid-column: 1 / -1; }
-label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .04em; }
-input, textarea {
-  width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: .6rem .85rem;
-  font-size: .95rem;
-  font-family: inherit;
-  color: var(--text);
-  background: #fff;
-  transition: border-color .2s;
-  outline: none;
-}
-input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
-textarea { resize: vertical; min-height: 72px; }
+        .tab-btn:hover {
+            color: var(--primary-blue);
+            background-color: var(--light-blue);
+        }
 
-.stop-list { display: flex; flex-direction: column; gap: .6rem; }
-.stop-item {
-  display: grid;
-  grid-template-columns: 90px 1fr 1fr 1fr 36px;
-  gap: .45rem;
-  align-items: end;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: .7rem;
-}
-.stop-item input { background: #fff; font-size: .88rem; }
-.btn-rm {
-  background: #fee2e2; border: none; border-radius: 6px;
-  width: 34px; height: 34px; cursor: pointer; font-size: 1rem;
-  color: #dc2626; display: flex; align-items: center; justify-content: center;
-}
-.btn-add {
-  display: flex; align-items: center; gap: .4rem;
-  background: none; border: 1.5px dashed var(--border);
-  border-radius: 8px; padding: .55rem 1rem;
-  cursor: pointer; color: var(--muted); font-size: .88rem; font-weight: 600;
-  width: 100%; justify-content: center; margin-top: .5rem;
-  transition: background .2s, color .2s;
-}
-.btn-add:hover { background: var(--bg); color: var(--primary); border-color: var(--primary); }
+        .tab-btn.active {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+        }
 
-.form-actions {
-  display: flex; gap: .75rem; margin-top: 1.5rem;
-}
-.btn-preview {
-  flex: 1; background: #f1f5f9; color: var(--text);
-  border: 1.5px solid var(--border); border-radius: 10px;
-  padding: .8rem 1rem; font-size: 1rem; font-weight: 700;
-  cursor: pointer; transition: background .2s;
-}
-.btn-preview:hover { background: #e2e8f0; }
-.btn-save-gh {
-  flex: 2;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: #fff; border: none; border-radius: 10px;
-  padding: .8rem 1.5rem; font-size: 1rem; font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(59,130,246,.35);
-  transition: transform .15s, box-shadow .15s;
-}
-.btn-save-gh:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,.45); }
-.btn-save-gh:disabled { opacity: .6; cursor: default; transform: none; }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
 
-.save-status {
-  margin-top: .85rem; padding: .55rem .85rem;
-  border-radius: 8px; font-size: .88rem; display: none;
-}
-.save-status.ok { background: #ecfdf5; color: #059669; display: block; }
-.save-status.err { background: #fef2f2; color: #dc2626; display: block; }
-.save-status.loading { background: #eff6ff; color: var(--primary-dark); display: block; }
+        /* 行程卡片設計 */
+        .timeline-item {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+        }
 
-/* Preview */
-.preview-wrap { margin-top: 1.5rem; }
-.preview-toolbar {
-  display: flex; gap: .65rem; margin-bottom: 1rem; flex-wrap: wrap;
-}
-.btn-action {
-  flex: 1; min-width: 120px;
-  display: flex; align-items: center; justify-content: center; gap: .35rem;
-  padding: .65rem .85rem; border-radius: 8px; border: none;
-  font-size: .85rem; font-weight: 600; cursor: pointer;
-}
-.btn-copy { background: #ecfdf5; color: #059669; border: 1.5px solid #6ee7b7; }
-.btn-copy:hover { background: #d1fae5; }
-.btn-print { background: #eff6ff; color: var(--primary-dark); border: 1.5px solid #bfdbfe; }
-.btn-print:hover { background: #dbeafe; }
+        .timeline-item:hover {
+            border-color: #cbdbe6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
 
-/* Itinerary card */
-.itinerary-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 24px rgba(0,0,0,.08);
-  overflow: hidden;
-}
-.itinerary-header {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-  color: #fff; padding: 1.5rem 1.75rem 1.1rem;
-}
-.itinerary-header h2 { font-size: 1.4rem; font-weight: 700; }
-.itinerary-header .meta { margin-top: .45rem; opacity: .85; font-size: .88rem; display: flex; flex-wrap: wrap; gap: .65rem; }
-.desc-box { background: rgba(255,255,255,.15); border-radius: 8px; padding: .65rem .9rem; margin-top: .85rem; font-size: .88rem; line-height: 1.6; }
-.day-section { padding: 1.35rem 1.75rem; border-bottom: 1px solid var(--border); }
-.day-section:last-child { border-bottom: none; }
-.day-label {
-  display: inline-flex; align-items: center; gap: .35rem;
-  background: var(--primary); color: #fff;
-  border-radius: 20px; padding: .25rem .85rem;
-  font-size: .78rem; font-weight: 700; margin-bottom: .9rem;
-}
-.timeline { position: relative; padding-left: 1.75rem; }
-.timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
-.tl-item { position: relative; margin-bottom: 1rem; }
-.tl-item:last-child { margin-bottom: 0; }
-.tl-dot { position: absolute; left: -1.75rem; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 2.5px solid #fff; box-shadow: 0 0 0 2px var(--primary); }
-.tl-dot.accent { background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-.tl-time { font-size: .78rem; font-weight: 700; color: var(--muted); letter-spacing: .05em; }
-.tl-name { font-size: .97rem; font-weight: 600; margin: .12rem 0; }
-.tl-note { font-size: .83rem; color: var(--muted); line-height: 1.5; }
-.map-link { display: inline-flex; align-items: center; gap: .3rem; margin-top: .25rem; font-size: .8rem; color: var(--primary); text-decoration: none; font-weight: 600; }
-.map-link:hover { text-decoration: underline; }
+        /* 改良：行程主內容變成可點擊區域 */
+        .item-header {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            padding-right: 55px;
+            cursor: pointer; /* 提示使用者整行可點擊 */
+            user-select: none; /* 防止頻繁點擊時反白文字 */
+        }
 
-.editing-badge {
-  display: inline-block;
-  background: #fef3c7; color: #92400e;
-  border-radius: 6px; padding: .25rem .65rem;
-  font-size: .78rem; font-weight: 700; margin-bottom: 1rem;
-}
+        .time {
+            font-weight: 700;
+            color: var(--primary-blue);
+            background: var(--light-blue);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            margin-right: 18px;
+            letter-spacing: 0.5px;
+        }
 
-/* Reset button variant */
-.btn-reset {
-  flex: 0.6;
-  background: #fef2f2; color: var(--danger);
-  border: 1.5px solid #fca5a5; border-radius: 10px;
-  padding: .8rem 1rem; font-size: 1rem; font-weight: 700;
-  cursor: pointer; transition: background .2s;
-}
-.btn-reset:hover { background: #fee2e2; }
+        .location {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
 
-@media (max-width: 540px) {
-  /* Header: prevent h1 text from overlapping absolute settings button */
-  header { padding: 1.25rem 5rem 1.75rem 1.25rem; text-align: left; }
-  header p { font-size: .82rem; }
+        /* 右側箭頭純做視覺提示，不單獨接收點擊 */
+        .arrow-indicator {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.85rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, color 0.2s ease;
+            pointer-events: none; /* 讓點擊事件直接穿透給底下的 item-header */
+        }
 
-  /* Settings: stack vertically */
-  .settings-inner { grid-template-columns: 1fr; }
-  .btn-save-cfg { width: 100%; }
+        .timeline-item:hover .arrow-indicator {
+            color: var(--primary-blue);
+        }
 
-  /* Tabs */
-  .tab { font-size: .82rem; padding: .6rem .5rem; }
+        /* 當父層卡片展開時，箭頭旋轉 */
+        .timeline-item.expanded .arrow-indicator {
+            transform: translateY(-50%) rotate(180deg);
+            color: var(--primary-blue);
+        }
 
-  /* Panel card */
-  .panel-card { padding: 1.1rem; border-radius: 0 0 var(--radius) var(--radius); }
+        /* 展開細節區塊 */
+        .item-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #fafbfc;
+        }
 
-  /* Form grid: single column */
-  .form-grid { grid-template-columns: 1fr; }
-  .full { grid-column: 1; }
+        .timeline-item.expanded .item-details {
+            max-height: 400px;
+            border-top: 1px solid var(--border-color);
+        }
 
-  /* Stop items: 3-column layout with explicit button position */
-  .stop-item {
-    grid-template-columns: 84px 1fr 34px;
-    gap: .4rem;
-    padding: .6rem;
-  }
-  /* time → col 1, name → col 2 (auto-placed, correct) */
-  /* button forced to row 1, col 3 so it aligns with time+name */
-  .stop-item .btn-rm { grid-row: 1; grid-column: 3; align-self: end; width: 30px; height: 30px; }
-  /* note and map: full-width rows below */
-  .stop-item > div:nth-child(3) { grid-column: 1 / -1; }
-  .stop-item > div:nth-child(4) { grid-column: 1 / -1; }
+        .details-content {
+            padding: 20px;
+            font-size: 0.95rem;
+            color: #4f5d73;
+        }
 
-  /* Form actions: save button full-width on top, then reset+preview below */
-  .form-actions { flex-wrap: wrap; gap: .5rem; }
-  .btn-save-gh  { flex: 1 1 100%; order: -1; }
-  .btn-preview  { flex: 1 1 calc(50% - .25rem); font-size: .9rem; padding: .75rem .5rem; }
-  .btn-reset    { flex: 1 1 calc(50% - .25rem); font-size: .9rem; padding: .75rem .5rem; }
+        .note-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: #eaeff5;
+            color: #475569;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-  /* List toolbar */
-  .list-toolbar h3 { font-size: .9rem; }
+        .details-content ul {
+            margin: 0;
+            padding-left: 18px;
+        }
 
-  /* Itinerary card */
-  .day-section { padding: 1.1rem; }
-  .itinerary-header { padding: 1.1rem; }
-}
-@media print {
-  header, .tabs, .panel-wrap > :not(.preview-wrap) { display: none !important; }
-  .preview-toolbar { display: none !important; }
-  .itinerary-card { box-shadow: none; }
-  .day-section { page-break-inside: avoid; }
-}
-</style>
+        .details-content li {
+            margin-bottom: 8px;
+        }
+
+        .details-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .details-content li::marker {
+            color: var(--primary-blue);
+        }
+
+        .details-p {
+            margin: 0;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <h1>✈️ 旅遊行程管理</h1>
-  <p>行程自動存入 GitHub，隨時讀取修改</p>
-  <button class="settings-btn" onclick="toggleSettings()">⚙️ 設定</button>
-</header>
+<div class="container">
+    <div class="header-title">東京自由行 · 行程摘要</div>
 
-<!-- Settings Panel -->
-<div id="settingsPanel" class="settings-panel">
-  <div class="settings-inner">
-    <div>
-      <label>GitHub Token</label>
-      <input id="cfgToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
-    </div>
-    <div>
-      <label>使用者名稱</label>
-      <input id="cfgUser" type="text" placeholder="Leooooooo121">
-    </div>
-    <div>
-      <label>Repository</label>
-      <input id="cfgRepo" type="text" placeholder="schedule">
-    </div>
-    <div>
-      <label style="visibility:hidden;display:block">.</label>
-      <button class="btn-save-cfg" onclick="saveSettings()">儲存</button>
-    </div>
-  </div>
-</div>
-
-<!-- Tabs -->
-<div class="tabs">
-  <button class="tab active" id="tab-list" onclick="switchTab('list')">📂 我的行程</button>
-  <button class="tab" id="tab-edit" onclick="switchTab('edit')">✏️ 新增 / 編輯</button>
-</div>
-
-<!-- Panel: My Itineraries -->
-<div id="panel-list" class="tab-panel active">
-  <div class="panel-wrap">
-    <div class="panel-card">
-      <div class="list-toolbar">
-        <h3>已儲存的行程</h3>
-        <div style="display:flex;gap:.5rem">
-          <button class="btn-refresh" onclick="newItinerary()" style="background:#ecfdf5;color:#059669;border-color:#6ee7b7">＋ 新增</button>
-          <button class="btn-refresh" id="refreshBtn" onclick="loadItineraryList()">↻ 重新載入</button>
-        </div>
-      </div>
-      <div id="itineraryList">
-        <div class="empty-state">
-          <div class="empty-icon">🗺️</div>
-          <p>尚未載入行程<br>請先設定 GitHub 憑證，然後點「重新載入」</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Panel: Create / Edit -->
-<div id="panel-edit" class="tab-panel">
-  <div class="panel-wrap">
-    <div class="panel-card">
-      <div id="editingBadge" style="display:none" class="editing-badge">📝 編輯中：<span id="editingName"></span></div>
-      <div class="form-grid">
-        <div class="full">
-          <label>📁 旅遊專案名稱（資料夾名稱）</label>
-          <input id="projectInput" type="text" placeholder="Ex: 2026東京春節之旅">
-        </div>
-        <div class="full">
-          <label>🗺️ 旅遊目的地</label>
-          <input id="destInput" type="text" placeholder="Ex: 東京">
-        </div>
-        <div>
-          <label>📅 開始日期</label>
-          <input id="startInput" type="date">
-        </div>
-        <div>
-          <label>🏁 結束日期</label>
-          <input id="endInput" type="date">
-        </div>
-        <div class="full">
-          <label>📝 旅遊說明</label>
-          <textarea id="descInput" placeholder="簡單描述這次旅遊的主題或目的…"></textarea>
-        </div>
-        <div class="full">
-          <label>📍 景點行程安排</label>
-          <div class="stop-list" id="stopList"></div>
-          <button class="btn-add" onclick="addStop()">＋ 新增景點 / 行程</button>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn-reset" onclick="resetForm()">🗑 重設</button>
-        <button class="btn-preview" onclick="buildPreview()">👁️ 預覽</button>
-        <button class="btn-save-gh" id="saveBtn" onclick="saveToGitHub()">☁️ 儲存到 GitHub</button>
-      </div>
-      <div class="save-status" id="saveStatus"></div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'day1')">Day 1</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day2')">Day 2</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day3')">Day 3</button>
     </div>
 
-    <!-- Preview -->
-    <div class="preview-wrap" id="previewWrap" style="display:none">
-      <div class="preview-toolbar">
-        <button class="btn-action btn-copy" onclick="copyText()">📋 複製文字</button>
-        <button class="btn-action btn-print" onclick="window.print()">🖨️ 列印 / PDF</button>
-      </div>
-      <div class="itinerary-card" id="itineraryCard"></div>
+    <!-- Day 1 內容 -->
+    <div id="day1" class="tab-content active">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <!-- 點擊整個 item-header 區塊即可觸發 -->
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">桃園國際機場 (T2 航廈)</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <ul>
+                        <li>建議提早 2.5 小時至航空公司櫃檯辦理報到與行李託運。</li>
+                        <li>再次確認護照效期是否在 6 個月以上。</li>
+                        <li>行動電源、鋰電池及打火機請務必放置於隨身行李，不可託運。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">14:30</span>
+                <span class="location">抵達成田機場 & 搭乘 Skyliner</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">備註</span>
+                    <p class="details-p">入境後前往 B1 樓層的 Keisei Electric Railway 售票處，憑憑證兌換 Skyliner 實體車票，直接前往京成上野站。</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Day 2 內容 -->
+    <div id="day2" class="tab-content">
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">10:00</span>
+                <span class="location">淺草寺雷門 / 仲見世通</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">備註</span>
+                    <p class="details-p">上午主要參訪雷門、本堂及周邊商店街。注意：在日本商店街購買小吃時，請於店門口或指定區域食用完畢，避免邊走邊吃。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 3 內容 -->
+    <div id="day3" class="tab-content">
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:30</span>
+                <span class="location">築地場外市場 (午餐)</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <p class="details-p">多數海鮮丼與人氣店家於 14:00 後便會陸續打烊，建議提早前往排隊。現場人潮較多，請注意隨身財務。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-// ── GitHub API ────────────────────────────────────────────────────────────────
-const GH = {
-  get token() { return localStorage.getItem('gh_token') || ''; },
-  get user()  { return localStorage.getItem('gh_user')  || ''; },
-  get repo()  { return localStorage.getItem('gh_repo')  || ''; },
-  configured() { return this.token && this.user && this.repo; },
-  headers() {
-    return {
-      'Authorization': `token ${this.token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    };
-  },
-  encodePath(path) {
-    return path.split('/').map(s => encodeURIComponent(s)).join('/');
-  },
+    function switchTab(event, dayId) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
 
-  async listAll() {
-    const res = await fetch(
-      `https://api.github.com/repos/${this.user}/${this.repo}/git/trees/HEAD?recursive=1`,
-      { headers: this.headers() }
-    );
-    if (res.status === 404) return [];
-    if (!res.ok) throw new Error(`GitHub API 錯誤 (${res.status})`);
-    const data = await res.json();
-    return (data.tree || [])
-      .filter(f => f.type === 'blob' && /^trips\/.+\/itinerary\.json$/.test(f.path))
-      .map(f => {
-        const parts = f.path.split('/');
-        return {
-          path: f.path,
-          project: decodeURIComponent(parts[1])
-        };
-      })
-      .sort((a, b) => a.project.localeCompare(b.project, 'zh-TW'));
-  },
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => btn.classList.remove('active'));
 
-  async load(path) {
-    const res = await fetch(
-      `https://api.github.com/repos/${this.user}/${this.repo}/contents/${this.encodePath(path)}`,
-      { headers: this.headers() }
-    );
-    if (!res.ok) throw new Error(`載入失敗 (${res.status})`);
-    const file = await res.json();
-    const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g, ''))));
-    return { data: JSON.parse(text), sha: file.sha, path };
-  },
-
-  async save(path, data, sha) {
-    const json = JSON.stringify(data, null, 2);
-    const content = btoa(unescape(encodeURIComponent(json)));
-    const body = {
-      message: sha ? `update: ${data.project}` : `add: ${data.project}`,
-      content,
-      ...(sha ? { sha } : {})
-    };
-    const res = await fetch(
-      `https://api.github.com/repos/${this.user}/${this.repo}/contents/${this.encodePath(path)}`,
-      { method: 'PUT', headers: this.headers(), body: JSON.stringify(body) }
-    );
-    if (!res.ok) throw new Error((await res.json()).message || `儲存失敗 (${res.status})`);
-    return (await res.json()).content.sha;
-  },
-
-  async delete(path, sha) {
-    const body = { message: `delete: ${path}`, sha };
-    const res = await fetch(
-      `https://api.github.com/repos/${this.user}/${this.repo}/contents/${this.encodePath(path)}`,
-      { method: 'DELETE', headers: this.headers(), body: JSON.stringify(body) }
-    );
-    if (!res.ok) throw new Error(`刪除失敗 (${res.status})`);
-  }
-};
-
-// ── Settings ──────────────────────────────────────────────────────────────────
-function toggleSettings() {
-  document.getElementById('settingsPanel').classList.toggle('open');
-}
-function saveSettings() {
-  localStorage.setItem('gh_token', document.getElementById('cfgToken').value.trim());
-  localStorage.setItem('gh_user',  document.getElementById('cfgUser').value.trim());
-  localStorage.setItem('gh_repo',  document.getElementById('cfgRepo').value.trim());
-  document.getElementById('settingsPanel').classList.remove('open');
-  loadItineraryList();
-}
-function loadSettingsUI() {
-  document.getElementById('cfgToken').value = GH.token;
-  document.getElementById('cfgUser').value  = GH.user;
-  document.getElementById('cfgRepo').value  = GH.repo;
-}
-
-// ── Tabs ──────────────────────────────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(`tab-${name}`).classList.add('active');
-  document.getElementById(`panel-${name}`).classList.add('active');
-  if (name === 'list') loadItineraryList();
-}
-
-// ── Itinerary list ────────────────────────────────────────────────────────────
-let _listCache = null; // { path → sha }
-
-async function loadItineraryList() {
-  if (!GH.configured()) {
-    setListHTML(`<div class="empty-state"><div class="empty-icon">⚙️</div><p>請先點右上角「設定」輸入 GitHub 憑證</p></div>`);
-    return;
-  }
-  const btn = document.getElementById('refreshBtn');
-  btn.disabled = true; btn.textContent = '載入中…';
-  try {
-    const items = await GH.listAll();
-    _listCache = {};
-    if (!items.length) {
-      setListHTML(`<div class="empty-state"><div class="empty-icon">🗺️</div><p>目前沒有儲存的行程<br>切換到「新增 / 編輯」頁面建立第一個行程</p></div>`);
-      return;
+        document.getElementById(dayId).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
-    let html = '';
-    for (const item of items) {
-      const safeProject = escHtml(item.project);
-      const safePath = item.path.replace(/'/g, "\\'");
-      html += `<div class="itinerary-item" onclick="loadItinerary('${safePath}')">
-        <div class="item-icon">✈️</div>
-        <div class="item-info">
-          <div class="item-dest">${safeProject}</div>
-          <div class="item-dates">trips/${safeProject}/itinerary.json</div>
-        </div>
-        <div class="item-actions" onclick="event.stopPropagation()">
-          <button class="btn-item btn-load" onclick="loadItinerary('${safePath}')">載入</button>
-          <button class="btn-item btn-delete" onclick="deleteItinerary('${safePath}')">刪除</button>
-        </div>
-      </div>`;
+
+    // 行程詳細備註的展開/收合功能（改由 item-header 觸發）
+    function toggleDetails(headerElement) {
+        // 找到點擊區域所屬的完整卡片 (.timeline-item)
+        const timelineItem = headerElement.closest('.timeline-item');
+        timelineItem.classList.toggle('expanded');
     }
-    setListHTML(html);
-  } catch(e) {
-    setListHTML(`<div class="empty-state"><div class="empty-icon">❌</div><p>載入失敗：${escHtml(e.message)}</p></div>`);
-  } finally {
-    btn.disabled = false; btn.textContent = '↻ 重新載入';
-  }
-}
-
-function setListHTML(html) {
-  document.getElementById('itineraryList').innerHTML = html;
-}
-
-async function loadItinerary(path) {
-  if (!GH.configured()) return;
-  setStatus('loading', '載入中…');
-  try {
-    const { data, sha } = await GH.load(path);
-    _currentPath = path;
-    _currentSha  = sha;
-    populateForm(data);
-    switchTab('edit');
-    setStatus('ok', `✅ 已載入「${data.project || data.dest}」行程`);
-    setTimeout(() => setStatus('', ''), 3000);
-  } catch(e) {
-    alert('載入失敗：' + e.message);
-  }
-}
-
-async function deleteItinerary(path) {
-  if (!confirm(`確定要刪除這個行程嗎？`)) return;
-  try {
-    // Need SHA — load it first
-    const { sha } = await GH.load(path);
-    await GH.delete(path, sha);
-    loadItineraryList();
-  } catch(e) {
-    alert('刪除失敗：' + e.message);
-  }
-}
-
-// ── Form ──────────────────────────────────────────────────────────────────────
-let _currentPath = null;
-let _currentSha  = null;
-
-const defaultStops = [
-  { time: '09:00', name: '早餐 / 集合出發', note: '在飯店或附近餐廳用餐', map: '' },
-  { time: '10:30', name: '第一景點參觀',     note: '自由探索',             map: '' },
-  { time: '12:30', name: '午餐',             note: '附近特色餐廳',         map: '' },
-  { time: '14:00', name: '下午景點 / 購物',  note: '自由活動',             map: '' },
-  { time: '17:30', name: '晚餐',             note: '推薦當地料理',         map: '' },
-  { time: '19:30', name: '夜間活動 / 返回',  note: '散步或返回住宿',      map: '' },
-];
-
-function addStop(s = {}) {
-  const list = document.getElementById('stopList');
-  const div  = document.createElement('div');
-  div.className = 'stop-item';
-  div.innerHTML = `
-    <div><label style="font-size:.72rem">時間 HH:mm</label>
-      <input type="time" value="${s.time || '09:00'}"></div>
-    <div><label style="font-size:.72rem">景點 / 活動名稱</label>
-      <input type="text" placeholder="名稱" value="${escHtml(s.name || '')}"></div>
-    <div><label style="font-size:.72rem">備註說明</label>
-      <input type="text" placeholder="備註（選填）" value="${escHtml(s.note || '')}"></div>
-    <div><label style="font-size:.72rem">Google Maps</label>
-      <input type="url" placeholder="https://maps.app.goo.gl/..." value="${escHtml(s.map || '')}"></div>
-    <button class="btn-rm" onclick="this.parentElement.remove()" title="刪除">✕</button>`;
-  list.appendChild(div);
-}
-
-function getStops() {
-  return Array.from(document.getElementById('stopList').children).map(el => {
-    const ins = el.querySelectorAll('input');
-    return { time: ins[0].value, name: ins[1].value, note: ins[2].value, map: ins[3].value };
-  }).filter(s => s.name.trim());
-}
-
-function populateForm(data) {
-  document.getElementById('projectInput').value = data.project || '';
-  document.getElementById('destInput').value  = data.dest  || '';
-  document.getElementById('startInput').value = data.start || '';
-  document.getElementById('endInput').value   = data.end   || '';
-  document.getElementById('descInput').value  = data.desc  || '';
-  const list = document.getElementById('stopList');
-  list.innerHTML = '';
-  (data.stops || []).forEach(addStop);
-
-  const badge = document.getElementById('editingBadge');
-  document.getElementById('editingName').textContent = data.project || data.dest;
-  badge.style.display = 'block';
-
-  document.getElementById('previewWrap').style.display = 'none';
-}
-
-function newItinerary() {
-  resetForm();
-  switchTab('edit');
-}
-
-function resetForm() {
-  _currentPath = null;
-  _currentSha  = null;
-  document.getElementById('projectInput').value = '';
-  document.getElementById('destInput').value  = '';
-  document.getElementById('startInput').value = '';
-  document.getElementById('endInput').value   = '';
-  document.getElementById('descInput').value  = '';
-  const list = document.getElementById('stopList');
-  list.innerHTML = '';
-  defaultStops.forEach(addStop);
-  document.getElementById('editingBadge').style.display = 'none';
-  document.getElementById('previewWrap').style.display = 'none';
-  setStatus('', '');
-}
-
-// ── Save to GitHub ────────────────────────────────────────────────────────────
-async function saveToGitHub() {
-  if (!GH.configured()) {
-    alert('請先在設定中輸入 GitHub 憑證');
-    toggleSettings();
-    return;
-  }
-  const project = document.getElementById('projectInput').value.trim();
-  const dest    = document.getElementById('destInput').value.trim();
-  const start   = document.getElementById('startInput').value;
-  if (!project) { alert('請輸入旅遊專案名稱（資料夾名稱）'); return; }
-  if (!dest)    { alert('請輸入目的地'); return; }
-  if (!start)   { alert('請選擇開始日期'); return; }
-
-  const data = {
-    project,
-    dest,
-    start,
-    end:    document.getElementById('endInput').value   || '',
-    desc:   document.getElementById('descInput').value.trim(),
-    stops:  getStops(),
-    savedAt: new Date().toISOString()
-  };
-
-  const newPath = `trips/${project}/itinerary.json`;
-  const sha = (_currentPath === newPath) ? _currentSha : null;
-
-  const btn = document.getElementById('saveBtn');
-  btn.disabled = true;
-  setStatus('loading', '儲存中…');
-
-  try {
-    const newSha = await GH.save(newPath, data, sha);
-    _currentPath = newPath;
-    _currentSha  = newSha;
-    setStatus('ok', `✅ 已儲存到 GitHub：trips/${project}/itinerary.json`);
-    document.getElementById('editingBadge').style.display = 'block';
-    document.getElementById('editingName').textContent = project;
-    buildPreview();
-  } catch(e) {
-    setStatus('err', '❌ 儲存失敗：' + e.message);
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-function setStatus(type, msg) {
-  const el = document.getElementById('saveStatus');
-  el.className = 'save-status' + (type ? ' ' + type : '');
-  el.textContent = msg;
-}
-
-// ── Preview ───────────────────────────────────────────────────────────────────
-function parseDT(val) {
-  if (!val) return null;
-  const [y, m, d] = val.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-function fmtDate(d) {
-  return d.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' });
-}
-function daysBetween(a, b) {
-  const diff = new Date(b.getFullYear(), b.getMonth(), b.getDate()) -
-               new Date(a.getFullYear(), a.getMonth(), a.getDate());
-  return Math.max(1, Math.round(diff / 86400000) + 1);
-}
-
-function buildPreview() {
-  const dest  = document.getElementById('destInput').value.trim() || '旅遊目的地';
-  const start = parseDT(document.getElementById('startInput').value);
-  const end   = parseDT(document.getElementById('endInput').value);
-  const desc  = document.getElementById('descInput').value.trim();
-  const stops = getStops();
-
-  if (!start) { alert('請選擇開始日期'); return; }
-
-  const days = end ? daysBetween(start, end) : 1;
-  let html = `
-  <div class="itinerary-header">
-    <h2>📍 ${escHtml(dest)}</h2>
-    <div class="meta">
-      <span>📅 ${fmtDate(start)}${end && end > start ? ' → ' + fmtDate(end) : ''}</span>
-      <span>🗓 共 ${days} 天</span>
-    </div>
-    ${desc ? `<div class="desc-box">💬 ${escHtml(desc)}</div>` : ''}
-  </div>`;
-
-  const perDay = Math.ceil(stops.length / days) || 1;
-  for (let d = 0; d < days; d++) {
-    const dayDate = new Date(start);
-    dayDate.setDate(start.getDate() + d);
-    const dayStops = stops.slice(d * perDay, (d + 1) * perDay);
-    html += `<div class="day-section">
-      <div class="day-label">第 ${d + 1} 天 &nbsp;${fmtDate(dayDate)}</div>
-      <div class="timeline">`;
-    if (!dayStops.length) {
-      html += `<div class="tl-item"><div class="tl-dot"></div><div class="tl-note">自由活動日</div></div>`;
-    } else {
-      dayStops.forEach((s, i) => {
-        const accent = i === 0 || i === dayStops.length - 1;
-        html += `<div class="tl-item">
-          <div class="tl-dot${accent ? ' accent' : ''}"></div>
-          <div class="tl-time">${escHtml(s.time)}</div>
-          <div class="tl-name">${escHtml(s.name)}</div>
-          ${s.note ? `<div class="tl-note">${escHtml(s.note)}</div>` : ''}
-          ${s.map  ? `<a class="map-link" href="${escHtml(s.map)}" target="_blank">📍 查看地圖</a>` : ''}
-        </div>`;
-      });
-    }
-    html += `</div></div>`;
-  }
-
-  document.getElementById('itineraryCard').innerHTML = html;
-  document.getElementById('previewWrap').style.display = 'block';
-
-  window._previewData = { dest, start, end, desc, stops, days };
-  document.getElementById('previewWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// ── Copy text ─────────────────────────────────────────────────────────────────
-function copyText() {
-  const d = window._previewData;
-  if (!d) return;
-  let txt = `📍 ${d.dest} 旅遊行程\n📅 ${fmtDate(d.start)}${d.end ? ' → ' + fmtDate(d.end) : ''}\n`;
-  if (d.desc) txt += `💬 ${d.desc}\n`;
-  txt += '\n';
-  const perDay = Math.ceil(d.stops.length / d.days) || 1;
-  for (let i = 0; i < d.days; i++) {
-    const dd = new Date(d.start); dd.setDate(d.start.getDate() + i);
-    txt += `【第${i+1}天】${fmtDate(dd)}\n`;
-    d.stops.slice(i * perDay, (i + 1) * perDay).forEach(s => {
-      txt += `  ${s.time} ${s.name}`;
-      if (s.note) txt += `（${s.note}）`;
-      if (s.map) txt += `\n        📍 ${s.map}`;
-      txt += '\n';
-    });
-    txt += '\n';
-  }
-  navigator.clipboard.writeText(txt).then(() => alert('✅ 行程已複製到剪貼簿！'));
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-loadSettingsUI();
-defaultStops.forEach(addStop);
-if (GH.configured()) loadItineraryList();
 </script>
+
 </body>
 </html>
