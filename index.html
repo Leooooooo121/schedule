@@ -213,7 +213,6 @@
             display: flex;
             align-items: center;
             padding: 18px;
-            padding-right: 55px;
             cursor: pointer; /* 提示使用者整行可點擊 */
             user-select: none; /* 防止頻繁點擊時反白文字 */
         }
@@ -235,33 +234,6 @@
             font-size: 1.05rem;
             font-weight: 700;
             color: var(--text-main);
-        }
-
-        /* 右側箭頭純做視覺提示，不單獨接收點擊 */
-        .arrow-indicator {
-            position: absolute;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            color: #64748b;
-            font-size: 0.85rem;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease, color 0.2s ease;
-            pointer-events: none; /* 讓點擊事件直接穿透給底下的 item-header */
-        }
-
-        .timeline-item:hover .arrow-indicator {
-            color: var(--primary-accent);
-        }
-
-        /* 當父層卡片展開時，箭頭旋轉 */
-        .timeline-item.expanded .arrow-indicator {
-            transform: translateY(-50%) rotate(180deg);
-            color: var(--primary-accent);
         }
 
         /* 展開細節區塊 */
