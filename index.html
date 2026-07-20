@@ -55,12 +55,27 @@
             padding-bottom: 12px;
             margin-bottom: 25px;
             overflow-x: auto;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            -ms-overflow-style: none;  /* Hide scrollbar for IE/Edge */
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab; /* 指示可手動拖拽滑動 */
+            user-select: none; /* 防止拖拽時選取文字 */
+        }
+
+        .tabs.active-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto; /* 拖拽時停用 smooth 滾動，避免延遲感 */
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari, Opera */
         }
 
         .tab-btn {
             background: transparent;
             border: none;
-            padding: 10px 24px;
+            padding: 10px 8px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -68,6 +83,15 @@
             color: var(--text-muted);
             transition: all 0.2s ease;
             white-space: nowrap;
+            text-align: center;
+            /* 預設五個或更多頁籤：每個寬度佔 (100% - 40px gap) / 5，並防止縮小以啟用滑動 */
+            flex: 0 0 calc((100% - 40px) / 5);
+        }
+
+        /* 當頁籤少於 5 個時，改為自適應寬度 (均分空間) */
+        .tab-btn:first-child:nth-last-child(-n+4),
+        .tab-btn:first-child:nth-last-child(-n+4) ~ .tab-btn {
+            flex: 1 1 0%;
         }
 
         .tab-btn:hover {
@@ -221,6 +245,8 @@
         <button class="tab-btn active" onclick="switchTab(event, 'day1')">Day 1</button>
         <button class="tab-btn" onclick="switchTab(event, 'day2')">Day 2</button>
         <button class="tab-btn" onclick="switchTab(event, 'day3')">Day 3</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day4')">Day 4</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day5')">Day 5</button>
     </div>
 
     <!-- Day 1 內容 -->
@@ -291,6 +317,55 @@
         </div>
     </div>
 
+
+    <!-- Day 3 內容 -->
+    <div id="day4" class="tab-content">
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:30</span>
+                <span class="location">築地場外市場 (午餐)</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <p class="details-p">多數海鮮丼與人氣店家於 14:00 後便會陸續打烊，建議提早前往排隊。現場人潮較多，請注意隨身財務。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Day 3 內容 -->
+    <div id="day5" class="tab-content">
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:30</span>
+                <span class="location">築地場外市場 (午餐)</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <p class="details-p">多數海鮮丼與人氣店家於 14:00 後便會陸續打烊，建議提早前往排隊。現場人潮較多，請注意隨身財務。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 3 內容 -->
+    <div id="day6" class="tab-content">
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:30</span>
+                <span class="location">築地場外市場 (午餐)</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <p class="details-p">多數海鮮丼與人氣店家於 14:00 後便會陸續打烊，建議提早前往排隊。現場人潮較多，請注意隨身財務。</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -302,7 +377,11 @@
         tabButtons.forEach(btn => btn.classList.remove('active'));
 
         document.getElementById(dayId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        const activeBtn = event.currentTarget;
+        activeBtn.classList.add('active');
+
+        // 將被點擊的頁籤平滑滾動到可見區域中心
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
     // 行程詳細備註的展開/收合功能（改由 item-header 觸發）
@@ -311,6 +390,50 @@
         const timelineItem = headerElement.closest('.timeline-item');
         timelineItem.classList.toggle('expanded');
     }
+
+    // 支援桌面端滑鼠拖拽手動滑動頁籤
+    const tabsContainer = document.querySelector('.tabs');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let hasDragged = false;
+
+    tabsContainer.addEventListener('mousedown', (e) => {
+        isDown = true;
+        tabsContainer.classList.add('active-dragging');
+        startX = e.pageX - tabsContainer.offsetLeft;
+        scrollLeft = tabsContainer.scrollLeft;
+        hasDragged = false;
+    });
+
+    tabsContainer.addEventListener('mouseleave', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mouseup', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - tabsContainer.offsetLeft;
+        const walk = (x - startX) * 1.5; // 滾動速度係數
+        if (Math.abs(walk) > 5) {
+            hasDragged = true;
+        }
+        tabsContainer.scrollLeft = scrollLeft - walk;
+    });
+
+    // 阻止在拖拽時觸發頁籤按鈕的 click 事件
+    tabsContainer.addEventListener('click', (e) => {
+        if (hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
 </script>
 
 </body>
