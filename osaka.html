@@ -243,8 +243,84 @@
         }
 
         .timeline-item.expanded .item-details {
-            max-height: 450px;
+            max-height: 4000px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .photo-gallery {
+            margin-top: 14px;
+            border: 1px solid rgba(37, 99, 235, 0.18);
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .photo-gallery summary {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1d4ed8;
+            font-size: 0.88rem;
+            user-select: none;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .photo-gallery summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .photo-gallery summary::before {
+            content: '▶';
+            font-size: 0.7rem;
+            transition: transform 0.25s ease;
+            display: inline-block;
+        }
+
+        .photo-gallery[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .photo-gallery[open] summary {
+            border-bottom: 1px solid rgba(37, 99, 235, 0.15);
+        }
+
+        .photo-grid {
+            padding: 12px;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(37, 99, 235, 0.3) transparent;
+        }
+
+        .photo-grid::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .photo-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .photo-grid::-webkit-scrollbar-thumb {
+            background: rgba(37, 99, 235, 0.3);
+            border-radius: 2px;
+        }
+
+        .photo-grid img {
+            flex: 0 0 auto;
+            width: 75vw;
+            max-width: 320px;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+            object-fit: contain;
+            scroll-snap-align: start;
         }
 
         .details-content {
@@ -366,6 +442,22 @@
                         <li>13:09 發車 ➔ 13:52 到達</li>
                         <li>13:35 發車 ➔ 14:11 到達</li>
                     </ul>
+                    <details class="photo-gallery">
+                        <summary>購買攻略</summary>
+                        <div class="photo-grid">
+                            <img src="https://i.meee.com.tw/j0LeMHT.jpg" loading="lazy" alt="攻略 1">
+                            <img src="https://i.meee.com.tw/MTSTkmi.jpg" loading="lazy" alt="攻略 2">
+                            <img src="https://i.meee.com.tw/dv0tIY4.jpg" loading="lazy" alt="攻略 3">
+                            <img src="https://i.meee.com.tw/YXY3CxJ.jpg" loading="lazy" alt="攻略 4">
+                            <img src="https://i.meee.com.tw/GNCeYoh.jpg" loading="lazy" alt="攻略 5">
+                            <img src="https://i.meee.com.tw/82ezvXs.jpg" loading="lazy" alt="攻略 6">
+                            <img src="https://i.meee.com.tw/bF3035v.jpg" loading="lazy" alt="攻略 7">
+                            <img src="https://i.meee.com.tw/HjytmWK.jpg" loading="lazy" alt="攻略 8">
+                            <img src="https://i.meee.com.tw/tI3H6G7.jpg" loading="lazy" alt="攻略 9">
+                            <img src="https://i.meee.com.tw/DtX69op.jpg" loading="lazy" alt="攻略 10">
+                            <img src="https://i.meee.com.tw/BQFWqBc.jpg" loading="lazy" alt="攻略 11">
+                        </div>
+                    </details>
                 </div>
             </div>
         </div>
