@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗓️ 北陸長野東京自由行 - 10天9夜客製化行程規劃 (2027/02/03 - 02/12)</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7; /* 天藍色，符合冬雪主題 */
+            --light-accent: rgba(2, 132, 199, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s ease, border-bottom 0.2s ease;
+            border-bottom: 1.5px dashed rgba(2, 132, 199, 0.4);
+            padding-bottom: 1px;
+        }
+        a:hover {
+            color: #0369a1;
+            border-bottom-color: #0369a1;
+        }
+
+        /* 背景流動液態彩色泡泡 */
+        .glass-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.55;
+            pointer-events: none;
+            animation: float-blob 20s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%);
+            top: -40px;
+            left: -40px;
+        }
+
+        .blob-2 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, #bae6fd 0%, #93c5fd 100%);
+            bottom: -60px;
+            right: -40px;
+            animation-duration: 25s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, #ffe4e6 0%, #fecdd3 100%);
+            top: 35%;
+            left: 55%;
+            animation-duration: 18s;
+            animation-delay: -10s;
+        }
+
+        @keyframes float-blob {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            33% {
+                transform: translate(40px, 60px) scale(1.1) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 30px) scale(0.95) rotate(240deg);
+            }
+            100% {
+                transform: translate(0, 0) scale(1) rotate(360deg);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: none;
+            padding: 40px 24px;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .tabs.active-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            text-align: center;
+            flex: 0 0 auto;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-accent);
+            background-color: rgba(255, 255, 255, 0.55);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn.active {
+            background-color: rgba(2, 132, 199, 0.85);
+            border-color: rgba(2, 132, 199, 0.25);
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .timeline-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .timeline-item:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 8px 24px rgba(31, 38, 135, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .time {
+            font-weight: 700;
+            color: #0369a1;
+            background: rgba(2, 132, 199, 0.12);
+            border: 1px solid rgba(2, 132, 199, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-right: 18px;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(2px);
+        }
+
+        .location {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .item-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .timeline-item.expanded .item-details {
+            max-height: 4000px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .details-content {
+            padding: 20px;
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        .note-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .note-tag.alert-tag {
+            background: rgba(217, 119, 6, 0.15);
+            border-color: rgba(217, 119, 6, 0.25);
+            color: #b45309;
+        }
+
+        .details-content ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .details-content li {
+            margin-bottom: 8px;
+        }
+
+        .details-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .details-content li::marker {
+            color: var(--primary-accent);
+        }
+
+        .details-p {
+            margin: 0;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .details-p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        /* 限制內容最大寬度 */
+        .header-title,
+        .header-subtitle,
+        .tabs,
+        .tab-content {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 背景液態玻璃裝飾泡泡 -->
+<div class="glass-blob blob-1"></div>
+<div class="glass-blob blob-2"></div>
+<div class="glass-blob blob-3"></div>
+
+<div class="container">
+    <h1 class="header-title">北陸長野東京 · 10天9夜客製化行程</h1>
+    <div class="header-subtitle">📅 2027/02/03 - 02/12 (華航 CI220 / CI221 松山直飛羽田)</div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'day1')">Day 1 (2/3)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day2')">Day 2 (2/4)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day3')">Day 3 (2/5)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day4')">Day 4 (2/6)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day5')">Day 5 (2/7)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day6')">Day 6 (2/8)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day7')">Day 7 (2/9)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day8')">Day 8 (2/10)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day9')">Day 9 (2/11)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day10')">Day 10 (2/12)</button>
+    </div>
+
+    <!-- Day 1 內容 -->
+    <div id="day1" class="tab-content active">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">松山機場 T1 ➔ 羽田機場 T3 (CI220) ✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <p class="details-p">搭乘中華航空 <strong>CI220</strong> 前往東京羽田機場。</p>
+                    <ul>
+                        <li><strong>起飛時間：</strong>09:00 台北松山 (TSA T1)</li>
+                        <li><strong>抵達時間：</strong>12:50 東京羽田 (HND T3)</li>
+                        <li>請提早 2-3 小時抵達松山機場辦理登機手續。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">13:30</span>
+                <span class="location">交通：直衝長野市區 🚇🚆</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通路線</span>
+                    <p class="details-p">辦理入境後攜帶行李，依序轉乘以下交通工具前往長野：</p>
+                    <ul>
+                        <li><strong>第一步：</strong>在羽田機場搭乘【東京單軌電車 (Monorail)】至【單軌電車濱松町站】。</li>
+                        <li><strong>第二步：</strong>在濱松町站轉乘【JK 京濱東北線】至【東京車站】。</li>
+                        <li><strong>第三步：</strong>在東京車站搭乘【JR 北陸新幹線】直達【長野車站】。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">16:00</span>
+                <span class="location">善光寺參拜 ⛩️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">造訪擁有千年歷史的日本國寶級古剎「善光寺」，體驗深厚的佛教文化與古街氛圍。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒380-0851長野県長野市元善町491" target="_blank" onclick="event.stopPropagation();">〒380-0851 長野県長野市元善町 491 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 4 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">17:30</span>
+                <span class="location">住宿：JR東日本大都會飯店 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒380-0824長野県長野市南石堂町1346" target="_blank" onclick="event.stopPropagation();">〒380-0824 長野県長野市南石堂町 1346 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 2 內容 -->
+    <div id="day2" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">地獄谷野猿公苑 (雪猴泡溫泉) 🐒❄️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">觀察世界聞名的雪猴泡溫泉景觀。</p>
+                    <ul>
+                        <li><strong>冬季開放時間 (11月～3月)：</strong>09:00 - 16:00</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒381-0401長野県下高井郡山ノ内町平穏6818-1" target="_blank" onclick="event.stopPropagation();">〒381-0401 長野県下高井郡山ノ内町平穏 6818-1 📍</a></li>
+                    </ul>
+                    <span class="note-tag alert-tag">交通指南 (二選一)</span>
+                    <p class="details-p"><strong>【推薦方案 A - 急行巴士】</strong></p>
+                    <ul>
+                        <li>自 <strong>JR長野站東口巴士站</strong>，搭乘前往「志賀高原」方向的急行巴士（車程約 41 分鐘，單程 1,500 日圓）。</li>
+                        <li>抵達「snow monkey (スノーモンキーパーク)」站下車。</li>
+                        <li>照著指示招牌，在雪地中步行約 35 分鐘即可抵達野猿公苑溫泉處。</li>
+                    </ul>
+                    <p class="details-p"><strong>【方案 B - 電車與計程車】</strong></p>
+                    <ul>
+                        <li>自 <strong>長野站</strong> 搭乘長野電鐵特急電車抵達【湯田中站】。</li>
+                        <li>自湯田中站轉搭計程車約 5 分鐘抵達野猿公苑入口。</li>
+                        <li>由入口步行約 20 分鐘抵達溫泉處。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">15:00</span>
+                <span class="location">Kamakura no Sato (雪屋之里) ❄️🍲</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">冬日限定的夢幻雪屋村，日落時間為 17:11。天黑點燈後，雪屋在夜色中透出溫暖的光芒，景緻極為浪漫。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒389-2226長野県飯山市寿808-1" target="_blank" onclick="event.stopPropagation();">〒389-2226 長野県飯山市寿 808-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">18:30</span>
+                <span class="location">住宿：JR東日本大都會飯店 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒380-0824長野県長野市南石堂町1346" target="_blank" onclick="event.stopPropagation();">〒380-0824 長野県長野市南石堂町 1346 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 3 內容 -->
+    <div id="day3" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">08:30</span>
+                <span class="location">戶隱神社參拜 ⛩️🌲</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">前往戶隱山麓參拜神聖的戶隱神社，欣賞參天杉木古道。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒381-4101長野県長野市戸隠3506" target="_blank" onclick="event.stopPropagation();">〒381-4101 長野県長野市戸隠 3506 📍</a></li>
+                    </ul>
+                    <span class="note-tag alert-tag">重要交通提醒</span>
+                    <p class="details-p">前往戶隱的接駁巴士，請於<strong>出發前一個月</strong>提早透過高速巴士網站完成線上預約：
+                        <br><a href="https://www.highwaybus.com/gp/reservation/rsvPlanList?lineId=256" target="_blank" onclick="event.stopPropagation();">Highwaybus 戶隱線預約連結 🔗</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">13:00</span>
+                <span class="location">交通：搭乘北陸新幹線往金澤 🚆</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通接駁</span>
+                    <p class="details-p">從長野車站搭乘【JR 北陸新幹線】直達【金澤車站】（車程約 1 小時 25 分鐘）。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">16:00</span>
+                <span class="location">東茶屋街漫步 🏮🍵</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">漫步於古色古香的木造江戶茶屋建築群，感受北陸小京都的典雅氣息，推薦品嚐金箔霜淇淋與參觀手工藝店。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒920-0831石川県金沢市東山1丁目13" target="_blank" onclick="event.stopPropagation();">〒920-0831 石川県金沢市東山 1 丁目 13 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 4 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">17:30</span>
+                <span class="location">住宿：Soki Kanazawa 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">入住融入日式美學與綠意的精緻概念旅宿，提供優質的現代和風空間與大浴場。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒920-0909石川県金沢市袋町2-1" target="_blank" onclick="event.stopPropagation();">〒920-0909 石川県金沢市袋町 2-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 4 內容 -->
+    <div id="day4" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">08:00</span>
+                <span class="location">金澤自駕一日遊開始 🚗</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">租車資訊</span>
+                    <p class="details-p">辦理租車手續，開始一天的北陸近郊自駕旅程。</p>
+                    <ul>
+                        <li><strong>租車時間：</strong>08:00 - 19:00</li>
+                        <li>請務必攜帶台灣駕照正本與日文翻譯本辦理取車。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:30</span>
+                <span class="location">上午：鶴來 (Tsurugi) 巡禮 🌸</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">前往桃桃的故鄉——白山市鶴來地區，感受純樸日本鄉間老街風情與傳統文化。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒920-2121石川県白山市鶴来本町" target="_blank" onclick="event.stopPropagation();">〒920-2121 石川県白山市鶴来本町 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">14:00</span>
+                <span class="location">下午：加賀傳統工藝村體驗 🎨✨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">工藝體驗</span>
+                    <p class="details-p">造訪「湯之國之森」加賀傳統工藝村，體驗經典的金箔畫畫手作體驗，親手完成屬於自己的精美金箔製品。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒923-0393石川県小松市粟津町ナ3-3" target="_blank" onclick="event.stopPropagation();">〒923-0393 石川県小松市粟津町ナ 3-3 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 4 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">19:00</span>
+                <span class="location">歸還車輛與晚餐 🚗🔑</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">注意事項</span>
+                    <p class="details-p">於 19:00 前返回金澤車站旁加油站加滿油並辦理還車手續，隨後可在車站周邊或近江町市場附近享用晚餐。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 5 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">20:00</span>
+                <span class="location">住宿：Soki Kanazawa 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">返回 Soki Kanazawa 飯店休息，連住第二晚。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒920-0909石川県金沢市袋町2-1" target="_blank" onclick="event.stopPropagation();">〒920-0909 石川県金沢市袋町 2-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 5 內容 -->
+    <div id="day5" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:30</span>
+                <span class="location">金澤經典一日遊：兼六園 🌲 金澤城公園 🏯</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">市區景點</span>
+                    <p class="details-p">利用金澤巴士一日券，參訪以下知名地標：</p>
+                    <ul>
+                        <li><strong>兼六園：</strong>日本三大名園之一，冬季代表性的「雪吊」奇景是必看地標。
+                            <br>📍 地址：<a href="https://maps.google.com/?q=〒920-0936石川県金沢市兼六町1" target="_blank" onclick="event.stopPropagation();">〒920-0936 石川県金沢市兼六町 1 📍</a>
+                        </li>
+                        <li><strong>金澤城公園：</strong>鄰近兼六園，欣賞加賀百萬石前田家的雄偉城牆與重修的三間長屋。
+                            <br>📍 地址：<a href="https://maps.google.com/?q=〒920-0937石川県金沢市丸の内1-1" target="_blank" onclick="event.stopPropagation();">〒920-0937 石川県金沢市丸の内 1-1 📍</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">14:00</span>
+                <span class="location">金澤21世紀美術館 🎨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">現代藝術</span>
+                    <p class="details-p">參觀超人氣裝置藝術「游泳池 (The Swimming Pool)」，感受現代設計與互動藝術的魅力。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒920-8509石川県金沢市広坂1-1-2" target="_blank" onclick="event.stopPropagation();">〒920-8509 石川県金沢市広坂 1 丁目 2-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">18:00</span>
+                <span class="location">住宿：Soki Kanazawa 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">連住第三晚，可在飯店大浴場泡湯洗去一身疲憊。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒920-0909石川県金沢市袋町2-1" target="_blank" onclick="event.stopPropagation();">〒920-0909 石川県金沢市袋町 2-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 6 內容 -->
+    <div id="day6" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:30</span>
+                <span class="location">交通：搭乘北陸新幹線往加賀溫泉 🚆</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通接駁</span>
+                    <p class="details-p">辦理退房並前往金澤車站，搭乘【JR 北陸新幹線】直達【加賀溫泉站】。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">14:00</span>
+                <span class="location">加賀溫泉站 ➔ 飯店接駁車 🚌</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">接駁服務</span>
+                    <p class="details-p">於【JR加賀溫泉站】前搭乘花見久兵衛旅館的免費送迎巴士直達旅館。</p>
+                    <p class="details-p"><strong>接駁班次時刻表：</strong></p>
+                    <ul>
+                        <li><strong>第一班：</strong>14:00 加賀溫泉站出發 ➔ 14:25 抵達飯店</li>
+                        <li><strong>第二班：</strong>15:00 加賀溫泉站出發 ➔ 15:25 抵達飯店</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">15:30</span>
+                <span class="location">住宿：花見久兵衛溫泉旅館 ♨️🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">辦理入住，享受老牌日式溫泉旅館，浸泡溫潤美肌的溪谷溫泉，晚上享用精緻豐富的加賀傳統會席晚餐。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過 Booking.com 預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒922-0128石川県加賀市山中温泉下谷町ニ138-1" target="_blank" onclick="event.stopPropagation();">〒922-0128 石川県加賀市山中温泉下谷町ニ 138-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 7 內容 -->
+    <div id="day7" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">退房送迎接駁 ➔ 加賀溫泉站 🚌</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">接駁班次</span>
+                    <p class="details-p">辦理退房，並搭乘飯店的接駁巴士前往 JR 加賀溫泉站：</p>
+                    <ul>
+                        <li><strong>第一班：</strong>09:00 飯店出發 ➔ 09:25 抵達加賀溫泉站</li>
+                        <li><strong>第二班：</strong>10:00 飯店出發 ➔ 10:25 抵達加賀溫泉站</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">12:00</span>
+                <span class="location">加賀草莓園吃到飽 🍓😋</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">美食體驗</span>
+                    <p class="details-p">於 12:00 抵達草莓園，享受 30-40 分鐘的冬季現摘草莓吃到飽樂趣！</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.app.goo.gl/HUXkSpoLsPTYkVBc6" target="_blank" onclick="event.stopPropagation();">加賀水果樂園 (加賀フルーツランド) 📍</a>
+                            <br>(〒922-0564 石川県加賀市豊町イ 59-1)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">13:00</span>
+                <span class="location">交通：搭新幹線經黑部宇奈月前往東京五反田 🚆</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">交通路線</span>
+                    <p class="details-p">大跨度大移動前往東京市區：</p>
+                    <ul>
+                        <li>先搭乘 JR 電車前往【黑部宇奈月溫泉站】。</li>
+                        <li><strong>13:00 起：</strong>搭乘【北陸新幹線】直達【東京車站】。</li>
+                        <li>在東京車站轉乘【JY 山手線】直達【JR 五反田站】。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 4 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">18:00</span>
+                <span class="location">上野、秋葉原夜間逛街 🛍️🎮</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">逛街攻略</span>
+                    <p class="details-p">利用夜間前往免稅藥妝一級戰區「上野阿美橫町」大採購，或去「秋葉原」購買模型、動漫週邊與電器。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 5 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">21:00</span>
+                <span class="location">住宿：JR東日本五反田飯店 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">辦理 Check-in。2024全新開幕，五反田車站直通，高質感精緻商旅，交通極為方便。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒141-0031東京都品川区西五反田1丁目1-1" target="_blank" onclick="event.stopPropagation();">〒141-0031 東京都品川区西五反田 1 丁目 1-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 8 內容 -->
+    <div id="day8" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">09:00</span>
+                <span class="location">川越冰川神社參拜 ⛩️🐟</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">景點看點</span>
+                    <p class="details-p">搭乘電車前往小江戶川越，參拜求緣名所「冰川神社」，親自撈取超可愛的鯛魚御守，並散步於江戶風情鐘樓街。</p>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒350-0052埼玉県川越市宮下町2丁目11-3" target="_blank" onclick="event.stopPropagation();">〒350-0052 埼玉県川越市宮下町 2 丁目 11-3 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">13:00</span>
+                <span class="location">新宿、涉谷大逛街 🛍️🏬</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">逛街熱點</span>
+                    <p class="details-p">下午到東京最繁華的新宿與涉谷，享受最前端的時尚服飾、藥妝、伴手禮大採購，或前往 SHIBUYA SKY 觀賞東京夜景。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">21:00</span>
+                <span class="location">住宿：JR東日本五反田飯店 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">返回五反田飯店休息，連續住宿第二晚。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒141-0031東京都品川区西五反田1丁目1-1" target="_blank" onclick="event.stopPropagation();">〒141-0031 東京都品川区西五反田 1 丁目 1-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 9內容 -->
+    <div id="day9" class="tab-content">
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">21:00</span>
+                <span class="location">住宿：JR東日本五反田飯店 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <p class="details-p">返回五反田飯店休息，連續住宿第三晚。</p>
+                    <ul>
+                        <li><strong>預訂備註：</strong>已透過官網預訂</li>
+                        <li>📍 地址：<a href="https://maps.google.com/?q=〒141-0031東京都品川区西五反田1丁目1-1" target="_blank" onclick="event.stopPropagation();">〒141-0031 東京都品川区西五反田 1 丁目 1-1 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 10 內容 -->
+    <div id="day10" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">11:00</span>
+                <span class="location">辦理退房 ➔ 前往羽田機場 T3 🚇✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">返程準備</span>
+                    <p class="details-p">辦理 Check-out 退房手續，攜帶行李自五反田站搭乘【京急線直通車/單軌電車】前往羽田機場第三航廈，辦理星宇/華航登機託運手續。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">14:15</span>
+                <span class="location">搭機返台：羽田機場 T3 ➔ 松山機場 T1 (CI221) ✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <p class="details-p"><strong>回程航班 CI221 (中華航空)</strong></p>
+                    <ul>
+                        <li>時間：14:15 羽田 (HND T3) 起飛 ➔ 17:15 抵達松山 (TSA T1)</li>
+                        <li>結束愉快豐富、收穫滿滿的10天9夜北陸、長野、金澤、東京經典客製化行程！</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(event, dayId) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(dayId).classList.add('active');
+        const activeBtn = event.currentTarget;
+        activeBtn.classList.add('active');
+
+        // 將被點擊的頁籤平滑滾動到可見區域中心
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    // 行程詳細備註的展開/收合功能（由 item-header 觸發）
+    function toggleDetails(headerElement) {
+        const timelineItem = headerElement.closest('.timeline-item');
+        timelineItem.classList.toggle('expanded');
+    }
+
+    // 支援桌面端滑鼠拖拽手動滑動頁籤
+    const tabsContainer = document.querySelector('.tabs');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let hasDragged = false;
+
+    tabsContainer.addEventListener('mousedown', (e) => {
+        isDown = true;
+        tabsContainer.classList.add('active-dragging');
+        startX = e.pageX - tabsContainer.offsetLeft;
+        scrollLeft = tabsContainer.scrollLeft;
+        hasDragged = false;
+    });
+
+    tabsContainer.addEventListener('mouseleave', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mouseup', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - tabsContainer.offsetLeft;
+        const walk = (x - startX) * 1.5; // 滾動速度係數
+        if (Math.abs(walk) > 5) {
+            hasDragged = true;
+        }
+        tabsContainer.scrollLeft = scrollLeft - walk;
+    });
+
+    // 阻止在拖拽時觸發頁籤按鈕的 click 事件
+    tabsContainer.addEventListener('click', (e) => {
+        if (hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+</script>
+
+</body>
+</html>
