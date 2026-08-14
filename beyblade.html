@@ -148,6 +148,14 @@
             background: #05b34c;
         }
 
+        .link-btn.visited {
+            background: #94a3b8;
+        }
+
+        .link-btn.visited:hover {
+            background: #64748b;
+        }
+
         @media (max-width: 600px) {
             .item-list {
                 grid-template-columns: 1fr;
@@ -506,6 +514,15 @@
 
     let currentView = 'store'; // 'item' or 'store'
 
+    function isVisited(url) {
+        return localStorage.getItem('v_' + url) === '1';
+    }
+
+    function markVisited(el, url) {
+        localStorage.setItem('v_' + url, '1');
+        el.classList.add('visited');
+    }
+
     function switchView(view) {
         currentView = view;
         document.getElementById('btn-item').classList.toggle('active', view === 'item');
@@ -552,7 +569,7 @@
                     ${items.map(i => `
                         <div class="item-row">
                             <span class="item-name">${i.store} <small style="color:var(--text-sub)">(${i.region})</small></span>
-                            <a href="${i.url}" target="_blank" class="link-btn">開啟連結</a>
+                            <a href="${i.url}" target="_blank" class="link-btn${isVisited(i.url) ? ' visited' : ''}" onclick="markVisited(this,'${i.url}')">開啟連結</a>
                         </div>
                     `).join('')}
                 </div>
@@ -579,7 +596,7 @@
                     ${data.items.map(i => `
                         <div class="item-row">
                             <span class="item-name">${i.name}</span>
-                            <a href="${i.url}" target="_blank" class="link-btn">開啟連結</a>
+                            <a href="${i.url}" target="_blank" class="link-btn${isVisited(i.url) ? ' visited' : ''}" onclick="markVisited(this,'${i.url}')">開啟連結</a>
                         </div>
                     `).join('')}
                 </div>
