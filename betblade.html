@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>戰鬥陀螺 抽籤預約連結彙整</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: #f1f5f9;
+            color: var(--text-sub);
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eff6ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .item-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .item-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .link-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #06c755; /* LINE Green */
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .link-btn:hover {
+            background: #05b34c;
+        }
+
+        @media (max-width: 600px) {
+            .item-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🏆 戰鬥陀螺抽籤與預約連結</h1>
+    </header>
+
+    <div class="controls">
+        <div class="btn-group">
+            <button class="btn active" id="btn-item" onclick="switchView('item')">📦 依商品品項</button>
+            <button class="btn" id="btn-store" onclick="switchView('store')">🏪 依店家地區</button>
+        </div>
+        <input type="text" id="search" class="search-box" placeholder="🔍 搜尋商品或店家名稱..." oninput="render()">
+    </div>
+
+    <div id="content"></div>
+</div>
+
+<script>
+    const rawData = [
+        { store: "忠孝SOGO", region: "雙北", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/wMx1ZAb" },
+        { store: "忠孝SOGO", region: "雙北", name: "UX-02 惡魔戰錘", url: "https://lin.ee/QGYO5mP" },
+        { store: "忠孝SOGO", region: "雙北", name: "BX-40 發射器(酒紅)", url: "https://lin.ee/7P23pKi" },
+        { store: "忠孝SOGO", region: "雙北", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/pqELDbA" },
+        { store: "忠孝SOGO", region: "雙北", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/sglHnh8" },
+        { store: "忠孝SOGO", region: "雙北", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/oDYlc3w" },
+
+        { store: "天母SOGO", region: "雙北", name: "BX-40 發射器(酒紅)", url: "https://lin.ee/y6L1GtI" },
+        { store: "天母SOGO", region: "雙北", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/xzcqCR3" },
+        { store: "天母SOGO", region: "雙北", name: "UX-02 惡魔戰鎚", url: "https://lin.ee/W4pSX5l" },
+        { store: "天母SOGO", region: "雙北", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/so0SFO4" },
+        { store: "天母SOGO", region: "雙北", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/yvOEgMw" },
+        { store: "天母SOGO", region: "雙北", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/RNL9cuJ" },
+
+        { store: "桃園站前新光三越", region: "桃竹苗", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/PdK4NKp" },
+        { store: "桃園站前新光三越", region: "桃竹苗", name: "BX-32 寬型極限衝擊戰鬥盤", url: "https://lin.ee/ZrdQxJaA" },
+        { store: "桃園站前新光三越", region: "桃竹苗", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/6iHefzX" },
+        { store: "桃園站前新光三越", region: "桃竹苗", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/O8iaIlz" },
+
+        { store: "信義A8", region: "雙北", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/RnZtfWH" },
+        { store: "信義A8", region: "雙北", name: "BX-40 發射器(酒紅)", url: "https://lin.ee/RsEKGWT" },
+        { store: "信義A8", region: "雙北", name: "UX-02 惡魔戰錘", url: "https://lin.ee/uszceB3" },
+        { store: "信義A8", region: "雙北", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/t8piCymu" },
+        { store: "信義A8", region: "雙北", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/r6FyWMx" },
+        { store: "信義A8", region: "雙北", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/tS7tmNQ" },
+
+        { store: "新竹遠東", region: "桃竹苗", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/7yCEQXm" },
+        { store: "新竹遠東", region: "桃竹苗", name: "UX-20 榮耀武神LF", url: "https://lin.ee/8CFT1EB" },
+        { store: "新竹遠東", region: "桃竹苗", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/RX4k4ij" },
+        { store: "新竹遠東", region: "桃竹苗", name: "UX-02 惡魔戰錘", url: "https://lin.ee/W05JtCVf" },
+        { store: "新竹遠東", region: "桃竹苗", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/R9cTi74" },
+        { store: "新竹遠東", region: "桃竹苗", name: "BX-40 發射器(酒紅)", url: "https://lin.ee/txLV3IV" },
+        { store: "新竹遠東", region: "桃竹苗", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/u8nWW4b" },
+
+        { store: "板橋遠東", region: "雙北", name: "UX-04 極限衝擊對戰組U", url: "https://lin.ee/XsNiaE7" },
+        { store: "板橋遠東", region: "雙北", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/9r6pSFt" },
+        { store: "板橋遠東", region: "雙北", name: "BX-35 隨機強化組Vol.04", url: "https://lin.ee/OmQrR2U" },
+        { store: "板橋遠東", region: "雙北", name: "BX-50 天堂日輪 隨機強化組", url: "https://lin.ee/qkKOG2K" },
+        { store: "板橋遠東", region: "雙北", name: "UX-20 榮耀武神LF", url: "https://lin.ee/8WJ19qT" },
+        { store: "板橋遠東", region: "雙北", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/PxiTX1C" },
+        { store: "板橋遠東", region: "雙北", name: "CX-17 隨機強化組 Vol.10", url: "https://lin.ee/TZe5ug1" },
+        { store: "板橋遠東", region: "雙北", name: "BX-00 暴風天馬3-70RA", url: "https://lin.ee/r1DRRfD" },
+        { store: "板橋遠東", region: "雙北", name: "UX-15 鮫鯊狂鱗改造組", url: "https://lin.ee/5GSJ2ntk" },
+        { store: "板橋遠東", region: "雙北", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/qPZjRKJ" },
+        { store: "板橋遠東", region: "雙北", name: "BX-33 皓戰猛虎", url: "https://lin.ee/Wsas28g" },
+        { store: "板橋遠東", region: "雙北", name: "UX-03 魔導神杖", url: "https://lin.ee/7rSRe0u" },
+        { store: "板橋遠東", region: "雙北", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/UGEZcQF" },
+        { store: "板橋遠東", region: "雙北", name: "BX-26 獨角刺心", url: "https://lin.ee/tnn4lES" },
+        { store: "板橋遠東", region: "雙北", name: "BX-18 X旋風發射器", url: "https://lin.ee/5GNgIi5" },
+        { store: "板橋遠東", region: "雙北", name: "BXG-04 銀牙烈虎S", url: "https://lin.ee/pVWPcl2" },
+        { store: "板橋遠東", region: "雙北", name: "BXG-01 烈焰飛鳳S", url: "https://lin.ee/6WSEOcZ" },
+
+        { store: "中和環球", region: "雙北", name: "BX-40 左迴旋拉條發射器（酒紅色）", url: "https://lin.ee/rejinQT" },
+        { store: "中和環球", region: "雙北", name: "UX-19 子彈獅鷲", url: "https://lin.ee/Po4u9wG" },
+        { store: "中和環球", region: "雙北", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/pTmfRLq" },
+        { store: "中和環球", region: "雙北", name: "UX-02 惡魔戰錘", url: "https://lin.ee/NUVnetM" },
+        { store: "中和環球", region: "雙北", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/V9SIcqL" },
+        { store: "中和環球", region: "雙北", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/9O8slTa" },
+
+        { store: "新竹遠雄", region: "桃竹苗", name: "UX-11 衝擊龍神 豪華組 ($550)", url: "https://lin.ee/sMx6eg0" },
+        { store: "新竹遠雄", region: "桃竹苗", name: "BX-51 旋風發射器 黑綠 ($250)", url: "https://lin.ee/5A0BZOI" },
+        { store: "新竹遠雄", region: "桃竹苗", name: "BX-40 發射器(酒紅) ($250)", url: "https://lin.ee/8GVHePh" },
+        { store: "新竹遠雄", region: "桃竹苗", name: "UX-19 子彈獅鷲H ($550)", url: "https://lin.ee/VXhbIyQ" },
+        { store: "新竹遠雄", region: "桃竹苗", name: "CX-18 腕龍鞭打 隨機強化組 ($350)", url: "https://lin.ee/t8jv8hW" },
+        { store: "新竹遠雄", region: "桃竹苗", name: "UX-02 惡魔戰錘 ($395)", url: "https://lin.ee/vdfJoDC" },
+
+        { store: "台中中友", region: "中部", name: "UX-02 惡魔戰錘", url: "https://lin.ee/X34nDmV" },
+        { store: "台中中友", region: "中部", name: "BX-40 發射器(酒紅)", url: "https://lin.ee/9Fmk8hz" },
+        { store: "台中中友", region: "中部", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/qIAEluxn" },
+        { store: "台中中友", region: "中部", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/ZeXNK9H" },
+        { store: "台中中友", region: "中部", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/x0voqcN" },
+        { store: "台中中友", region: "中部", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/xJBbnbF" },
+
+        { store: "屏東太平洋", region: "南部/東部", name: "UX-11 衝擊龍神 豪華組", url: "https://lin.ee/NZ6SoQZ" },
+        { store: "屏東太平洋", region: "南部/東部", name: "BX-40 發射器(酒紅)", url: "https://lin.ee/p6YDnxo" },
+        { store: "屏東太平洋", region: "南部/東部", name: "BX-51 旋風發射器 黑綠", url: "https://lin.ee/prpHtPG" },
+        { store: "屏東太平洋", region: "南部/東部", name: "CX-18 腕龍鞭打 隨機強化組", url: "https://lin.ee/N5nYpvj" },
+        { store: "屏東太平洋", region: "南部/東部", name: "UX-02 惡魔戰錘", url: "https://lin.ee/yKApUM7T" },
+        { store: "屏東太平洋", region: "南部/東部", name: "UX-19 子彈獅鷲H", url: "https://lin.ee/nfzrVbl" }
+    ];
+
+    let currentView = 'item'; // 'item' or 'store'
+
+    function switchView(view) {
+        currentView = view;
+        document.getElementById('btn-item').classList.toggle('active', view === 'item');
+        document.getElementById('btn-store').classList.toggle('active', view === 'store');
+        render();
+    }
+
+    function render() {
+        const keyword = document.getElementById('search').value.toLowerCase().trim();
+        const content = document.getElementById('content');
+        content.innerHTML = '';
+
+        // 篩選資料
+        const filtered = rawData.filter(d =>
+            d.name.toLowerCase().includes(keyword) ||
+            d.store.toLowerCase().includes(keyword) ||
+            d.region.toLowerCase().includes(keyword)
+        );
+
+        if (filtered.length === 0) {
+            content.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-sub);">查無相關結果 😅</div>';
+            return;
+        }
+
+        if (currentView === 'item') {
+            // 依商品名稱分組
+            const grouped = {};
+            filtered.forEach(d => {
+                // 簡化/統一名稱作為分類 Key
+                const cleanName = d.name.replace(/\(\$\d+\)/, '').trim();
+                if (!grouped[cleanName]) grouped[cleanName] = [];
+                grouped[cleanName].push(d);
+            });
+
+            for (const [itemName, items] of Object.entries(grouped)) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                <div class="card-title">
+                    <span>📦 ${itemName}</span>
+                    <span class="badge">${items.length} 家店有供貨</span>
+                </div>
+                <div class="item-list">
+                    ${items.map(i => `
+                        <div class="item-row">
+                            <span class="item-name">${i.store} <small style="color:var(--text-sub)">(${i.region})</small></span>
+                            <a href="${i.url}" target="_blank" class="link-btn">開啟連結</a>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+                content.appendChild(card);
+            }
+        } else {
+            // 依店家分組
+            const grouped = {};
+            filtered.forEach(d => {
+                if (!grouped[d.store]) grouped[d.store] = { region: d.region, items: [] };
+                grouped[d.store].items.push(d);
+            });
+
+            for (const [storeName, data] of Object.entries(grouped)) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                <div class="card-title">
+                    <span>🏪 ${storeName}</span>
+                    <span class="badge">${data.region}</span>
+                </div>
+                <div class="item-list">
+                    ${data.items.map(i => `
+                        <div class="item-row">
+                            <span class="item-name">${i.name}</span>
+                            <a href="${i.url}" target="_blank" class="link-btn">開啟連結</a>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+                content.appendChild(card);
+            }
+        }
+    }
+
+    // 首次渲染
+    render();
+</script>
+
+</body>
+</html>
