@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗓️ 新潟自由行-4天3夜(12/11 - 12/14)</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-accent: #0284c7; /* 天藍色，符合冬雪主題 */
+            --light-accent: rgba(2, 132, 199, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s ease, border-bottom 0.2s ease;
+            border-bottom: 1.5px dashed rgba(2, 132, 199, 0.4);
+            padding-bottom: 1px;
+        }
+        a:hover {
+            color: #0369a1;
+            border-bottom-color: #0369a1;
+        }
+
+        /* 背景流動液態彩色泡泡 */
+        .glass-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.55;
+            pointer-events: none;
+            animation: float-blob 20s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%);
+            top: -40px;
+            left: -40px;
+        }
+
+        .blob-2 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, #bae6fd 0%, #93c5fd 100%);
+            bottom: -60px;
+            right: -40px;
+            animation-duration: 25s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, #ffe4e6 0%, #fecdd3 100%);
+            top: 35%;
+            left: 55%;
+            animation-duration: 18s;
+            animation-delay: -10s;
+        }
+
+        @keyframes float-blob {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            33% {
+                transform: translate(40px, 60px) scale(1.1) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 30px) scale(0.95) rotate(240deg);
+            }
+            100% {
+                transform: translate(0, 0) scale(1) rotate(360deg);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: none;
+            padding: 40px 24px;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .tabs.active-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            text-align: center;
+            flex: 1 1 0%;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-accent);
+            background-color: rgba(255, 255, 255, 0.55);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn.active {
+            background-color: rgba(2, 132, 199, 0.85);
+            border-color: rgba(2, 132, 199, 0.25);
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .timeline-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .timeline-item:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 8px 24px rgba(31, 38, 135, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .time {
+            font-weight: 700;
+            color: #0369a1;
+            background: rgba(2, 132, 199, 0.12);
+            border: 1px solid rgba(2, 132, 199, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-right: 18px;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(2px);
+        }
+
+        .location {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .item-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .timeline-item.expanded .item-details {
+            max-height: 4000px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .details-content {
+            padding: 20px;
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        .note-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .note-tag.alert-tag {
+            background: rgba(217, 119, 6, 0.15);
+            border-color: rgba(217, 119, 6, 0.25);
+            color: #b45309;
+        }
+
+        .details-content ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .details-content li {
+            margin-bottom: 8px;
+        }
+
+        .details-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .details-content li::marker {
+            color: var(--primary-accent);
+        }
+
+        .details-p {
+            margin: 0;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .details-p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+        }
+
+        /* 限制內容最大寬度 */
+        .header-title,
+        .header-subtitle,
+        .tabs,
+        .tab-content {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 背景液態玻璃裝飾泡泡 -->
+<div class="glass-blob blob-1"></div>
+<div class="glass-blob blob-2"></div>
+<div class="glass-blob blob-3"></div>
+
+<div class="container">
+    <h1 class="header-title">~新潟~</h1>
+    <div class="header-subtitle">📅 12/11 - 12/14</div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(event, 'day1')">Day 1 (12/11)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day2')">Day 2 (12/12)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day3')">Day 3 (12/13)</button>
+        <button class="tab-btn" onclick="switchTab(event, 'day4')">Day 4 (12/14)</button>
+    </div>
+
+    <!-- Day 1 內容 -->
+    <div id="day1" class="tab-content active">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">13:55</span>
+                <span class="location">TPE 桃園國際機場 T1 出發 ✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <ul>
+                        <li>請提早 2-3 小時抵達桃園機場第一航廈辦理登機手續。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">18:00</span>
+                <span class="location">KIJ 新潟機場 抵達 🛬</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <ul>
+                        <li>辦理入境手續後，轉乘交通工具前往飯店。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 3 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">19:30</span>
+                <span class="location">住宿：Hotel Global View Niigata 🏨</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">住宿資訊</span>
+                    <ul>
+                        <li>📍 地址：<a href="https://maps.app.goo.gl/VV7bfVeF8Ppe7STW7" target="_blank" onclick="event.stopPropagation();">Hotel Global View Niigata 📍</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 2 內容 -->
+    <div id="day2" class="tab-content">
+        <div class="empty-placeholder">行程待安排</div>
+    </div>
+
+    <!-- Day 3 內容 -->
+    <div id="day3" class="tab-content">
+        <div class="empty-placeholder">行程待安排</div>
+    </div>
+
+    <!-- Day 4 內容 -->
+    <div id="day4" class="tab-content">
+        <!-- 行程 1 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">19:00</span>
+                <span class="location">KIJ 新潟機場 出發 ✈️</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <ul>
+                        <li>辦理退房後，請預留充足時間前往機場辦理登機手續。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行程 2 -->
+        <div class="timeline-item">
+            <div class="item-header" onclick="toggleDetails(this)">
+                <span class="time">22:30</span>
+                <span class="location">TPE 桃園國際機場 T1 抵達 🛬</span>
+            </div>
+            <div class="item-details">
+                <div class="details-content">
+                    <span class="note-tag">航班資訊</span>
+                    <p class="details-p">結束愉快的 4 天 3 夜新潟自由行！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(event, dayId) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(dayId).classList.add('active');
+        const activeBtn = event.currentTarget;
+        activeBtn.classList.add('active');
+
+        // 將被點擊的頁籤平滑滾動到可見區域中心
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    // 行程詳細備註的展開/收合功能（由 item-header 觸發）
+    function toggleDetails(headerElement) {
+        const timelineItem = headerElement.closest('.timeline-item');
+        timelineItem.classList.toggle('expanded');
+    }
+
+    // 支援桌面端滑鼠拖拽手動滑動頁籤
+    const tabsContainer = document.querySelector('.tabs');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let hasDragged = false;
+
+    tabsContainer.addEventListener('mousedown', (e) => {
+        isDown = true;
+        tabsContainer.classList.add('active-dragging');
+        startX = e.pageX - tabsContainer.offsetLeft;
+        scrollLeft = tabsContainer.scrollLeft;
+        hasDragged = false;
+    });
+
+    tabsContainer.addEventListener('mouseleave', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mouseup', () => {
+        isDown = false;
+        tabsContainer.classList.remove('active-dragging');
+    });
+
+    tabsContainer.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - tabsContainer.offsetLeft;
+        const walk = (x - startX) * 1.5; // 滾動速度係數
+        if (Math.abs(walk) > 5) {
+            hasDragged = true;
+        }
+        tabsContainer.scrollLeft = scrollLeft - walk;
+    });
+
+    // 阻止在拖拽時觸發頁籤按鈕的 click 事件
+    tabsContainer.addEventListener('click', (e) => {
+        if (hasDragged) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+</script>
+
+</body>
+</html>
